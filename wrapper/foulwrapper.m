@@ -133,6 +133,9 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
+  /* Try open */
+  system_call_exec([[NSString stringWithFormat:@"open '%@'", escape_arg(targetId)] UTF8String]);
+
   /* MobileContainerManager: locate app bundle container path */
   /* `LSApplicationProxy` cannot provide correct values of container URLs since
    * iOS 12. */
@@ -154,35 +157,28 @@ int main(int argc, char *argv[]) {
   NSURL *tempURL = [[NSFileManager defaultManager]
         URLForDirectory:NSItemReplacementDirectory
                inDomain:NSUserDomainMask
-      appropriateForURL:[NSURL fileURLWithPath:[[NSFileManager defaultManager]
-                                                   currentDirectoryPath]]
+      appropriateForURL:[NSURL fileURLWithPath:[[NSFileManager defaultManager] currentDirectoryPath]]
                  create:YES
                   error:&error];
   if (!tempURL) {
-    fprintf(stderr,
-            "cannot create appropriate item replacement directory: %s\n",
-            [[error localizedDescription] UTF8String]);
+    fprintf(stderr, "cannot create appropriate item replacement directory: %s\n", [[error localizedDescription] UTF8String]);
     return 1;
   }
 
-  NSString *tempPath =
-      [[tempURL path] stringByAppendingPathComponent:@"Payload"];
+  NSString *tempPath = [[tempURL path] stringByAppendingPathComponent:@"Payload"];
   BOOL didCopy = [[NSFileManager defaultManager] copyItemAtPath:targetPath
                                                          toPath:tempPath
                                                           error:&error];
   if (!didCopy) {
-    fprintf(stderr, "cannot copy app bundle: %s\n",
-            [[error localizedDescription] UTF8String]);
+    fprintf(stderr, "cannot copy app bundle: %s\n", [[error localizedDescription] UTF8String]);
     return 1;
   }
 
   /* Enumerate entire app bundle to find all Mach-Os. */
-  NSEnumerator *enumerator =
-      [[NSFileManager defaultManager] enumeratorAtPath:tempPath];
+  NSEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:tempPath];
   NSString *objectPath = nil;
   while (objectPath = [enumerator nextObject]) {
-    NSString *objectFullPath =
-        [tempPath stringByAppendingPathComponent:objectPath];
+    NSString *objectFullPath = [tempPath stringByAppendingPathComponent:objectPath];
     FILE *fp = fopen(objectFullPath.UTF8String, "rb");
     if (!fp) {
       perror("fopen");
@@ -199,12 +195,9 @@ int main(int argc, char *argv[]) {
       NSString *objectRawPath =
           [targetPath stringByAppendingPathComponent:objectPath];
 
-      int decryptStatus = system_call_exec([[NSString
-          stringWithFormat:@"dlopenn '%@'", escape_arg(objectRawPath)]
-          UTF8String]);
-      system_call_exec([[NSString
-          stringWithFormat:@"d3crypt -v '%@' '%@'", escape_arg(objectRawPath),
-                           escape_arg(objectFullPath)] UTF8String]);
+      int decryptStatus = system_call_exec([[NSString stringWithFormat:@"open '%@'", escape_arg(objectRawPath)] UTF8String]);
+      system_call_exec([[NSString stringWithFormat:@"d3crypt -v '%@' '%@'", escape_arg(objectRawPath), escape_arg(objectFullPath)] UTF8String]);
+
       if (decryptStatus != 0) {
         break;
       }
@@ -214,19 +207,15 @@ int main(int argc, char *argv[]) {
   }
 
   /* LSApplicationProxy: get app info */
-  LSApplicationProxy *appProxy =
-      [LSApplicationProxy applicationProxyForIdentifier:targetId];
+  LSApplicationProxy *appProxy = [LSApplicationProxy applicationProxyForIdentifier:targetId];
   assert(appProxy);
 
   /* zip: archive */
   NSString *archiveName =
-      [NSString stringWithFormat:@"%@_%@_dumped.ipa", [appProxy localizedName],
-                                 [appProxy shortVersionString]];
-  NSString *archivePath = [[[NSFileManager defaultManager] currentDirectoryPath]
-      stringByAppendingPathComponent:archiveName];
-  BOOL didClean = [[NSFileManager defaultManager] removeItemAtPath:archivePath
-                                                             error:nil];
-  // assert(didClean);
+      [NSString stringWithFormat:@"%@_%@_dumped.ipa", [appProxy localizedName], [appProxy shortVersionString]];
+  NSString *archivePath = [[[NSFileManager defaultManager] currentDirectoryPath] stringByAppendingPathComponent:archiveName];
+  BOOL didClean = [[NSFileManager defaultManager] removeItemAtPath:archivePath error:nil];
+
   int zipStatus = system_call_exec(
       [[NSString stringWithFormat:@"set -e; shopt -s dotglob; cd '%@'; zip -r "
                                   @"'%@' .; shopt -u dotglob;",
