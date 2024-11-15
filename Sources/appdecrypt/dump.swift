@@ -70,6 +70,7 @@ class Dump {
 
     var needDumpFilePaths = [String]()
     var dumpedFilePaths = [String]()
+    var dumpedDirPaths = [String]()
     let enumeratorAtPath = fileManager.enumerator(atPath: sourceUrl)
     if let arr = enumeratorAtPath?.allObjects as? [String] {
       for item in arr {
@@ -106,6 +107,7 @@ class Dump {
           #endif
           needDumpFilePaths.append(sourceUrl + "/" + item + "/" + machOName)
           dumpedFilePaths.append(targetUrl + "/" + item + "/" + machOName)
+          dumpedDirPaths.append(targetUrl + "/" + item)
         }
         if item.hasSuffix(".framework") {
           let frameName =
@@ -114,6 +116,7 @@ class Dump {
           if frameName != "" {
             needDumpFilePaths.append(sourceUrl + "/" + item + "/" + frameName)
             dumpedFilePaths.append(targetUrl + "/" + item + "/" + frameName)
+            dumpedDirPaths.append(targetUrl + "/" + item)
           }
         }
         if item.hasSuffix(".appex") {
@@ -122,12 +125,42 @@ class Dump {
           if exName != "" {
             needDumpFilePaths.append(sourceUrl + "/" + item + "/" + exName)
             dumpedFilePaths.append(targetUrl + "/" + item + "/" + exName)
+            dumpedDirPaths.append(targetUrl + "/" + item)
           }
         }
       }
     } else {
       consoleIO.writeMessage("File is empty.", to: .error)
       return
+    }
+
+    if ignoreCopy == true {
+      // copy file for dump
+      for (i, sourcePath) in needDumpFilePaths.enumerated() {
+        let targetPath = dumpedFilePaths[i]
+
+        // create dir
+        let dirPath = dumpedDirPaths[i]
+
+        // check if dir exists
+
+        do {
+          var isDirectory: ObjCBool = true
+          if fileManager.fileExists(atPath: dirPath, isDirectory: &isDirectory) == false {
+            try fileManager.createDirectory(
+              atPath: dirPath, withIntermediateDirectories: true, attributes: nil)
+          }
+        } catch let e {
+          consoleIO.writeMessage("Failed to create dir \(dirPath) with \(e)", to: .error)
+        }
+
+        do {
+          try fileManager.copyItem(atPath: sourcePath, toPath: targetPath)
+        } catch let e {
+          consoleIO.writeMessage(
+            "Failed to copy \(sourcePath) to \(targetPath) with \(e)", to: .error)
+        }
+      }
     }
 
     for (i, sourcePath) in needDumpFilePaths.enumerated() {
