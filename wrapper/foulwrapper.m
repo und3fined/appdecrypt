@@ -173,13 +173,14 @@ int main(int argc, char *argv[]) {
   assert(appProxy);
 
   NSFileManager *fileManager = [NSFileManager defaultManager];
-  NSString *homeDir = [[fileManager homeDirectoryForCurrentUser] path];
+  NSString *homeDir = [fileManager currentDirectoryPath];
 
   NSString *dumpPathName = [NSString stringWithFormat:@"Documents/appdecrypt/%@_%@/dump", [appProxy applicationIdentifier], [appProxy shortVersionString]];
   NSString *outPath = [NSString stringWithFormat:@"%@/%@", homeDir, dumpPathName];
 
   // check outPath exists
-  if ([fileManager fileExistsAtPath:outPath isDirectory:true]) {
+  BOOL isDir = true;
+  if ([fileManager fileExistsAtPath:outPath isDirectory:&isDir]) {
     fprintf(stderr, "[dump] Dump directory already exists. AUTO CLEANUP!\n");
     if ([fileManager removeItemAtPath:outPath error:&error]) {
       fprintf(stderr, "[dump] Removed directory: .%s\n", [normalize_path(outPath) UTF8String]);
