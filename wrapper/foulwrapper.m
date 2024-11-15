@@ -133,8 +133,6 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-
-  NSError *error = nil;
   fprintf(stderr, "[start] Target app -> %s\n", [targetId UTF8String]);
 
   /* MobileContainerManager: locate app bundle container path */
