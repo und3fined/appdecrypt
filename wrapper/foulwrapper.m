@@ -96,6 +96,18 @@ NSString *escape_arg(NSString *arg) {
   return [arg stringByReplacingOccurrencesOfString:@"\'" withString:@"'\\\''"];
 }
 
+NSString *normalize_path(NSString *p) {
+  NSString *curPath = [[NSFileManager defaultManager] currentDirectoryPath];
+
+  // check contains `procursus` in `curPath`
+  if ([curPath rangeOfString:@"procursus"].location != NSNotFound) {
+    // replace curPath in p
+    p = [p stringByReplacingOccurrencesOfString:curPath withString:@""];
+  }
+
+  return p;
+}
+
 @interface LSApplicationProxy ()
 - (NSString *)shortVersionString;
 @end
@@ -165,13 +177,14 @@ int main(int argc, char *argv[]) {
   NSString *outPath = [[fileManager currentDirectoryPath] stringByAppendingPathComponent:outPathName];
 
   if ([fileManager createDirectoryAtPath:outPath withIntermediateDirectories:YES attributes:nil error:&error]) {
-    fprintf(stderr, "[dump] Created directory: %s\n", [outPath UTF8String]);
+    fprintf(stderr, "[dump] Created directory: %s\n", [normalize_path(outPath) UTF8String]);
   } else {
-    fprintf(stderr, "[dump] Failed to create directory: %s\n", [outPath UTF8String]);
+    fprintf(stderr, "[dump] Failed to create directory: %s\n", [normalize_path(outPath) UTF8String]);
     return 1;
   }
 
-  int dumpStatus = system_call_exec([[NSString stringWithFormat:@"d3crypt '%@' '%@' -b", escape_arg(targetPath), escape_arg(outPath)] UTF8String]);
+  NSString *decryptPath = [NSString stringWithFormat:@".%@", normalize_path(outPath)];
+  int dumpStatus = system_call_exec([[NSString stringWithFormat:@"d3crypt '%@' '%@' -b", escape_arg(targetPath), escape_arg(decryptPath)] UTF8String]);
 
   if (dumpStatus != 0) {
     fprintf(stderr, "[dump] Failed\n");
