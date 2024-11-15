@@ -7,32 +7,8 @@ on:
   pull_request:
 
 jobs:
-  build_macOS:
-
-    runs-on: macos-latest
-    
-    strategy:
-      matrix:
-        arch: ['arm', 'x86']
-
-    steps:
-    - name: Check out source code
-      uses: actions/checkout@v2
-
-    - name: Set up permissions
-      run: chmod +x build-macOS_${{ matrix.arch }}.sh 
-
-    - name: Build
-      run: ./build-macOS_${{ matrix.arch }}.sh 
-
-    - name: Upload binary as artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: appdecrypt-macOS-${{ matrix.arch }}
-        path: appdecrypt
-        
   build_iOS:
-    runs-on: macos-latest
+    runs-on: macos-12
 
     steps:
     - name: Check out source code
@@ -40,7 +16,7 @@ jobs:
 
     - name: Set up permissions
       run: chmod +x build-iOS.sh
-      
+
     - name: Install ldid
       run: brew install ldid
 
@@ -48,7 +24,7 @@ jobs:
       run: ./build-iOS.sh
 
     - name: Upload binary as artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
-        name: appdecrypt-iOS
-        path: appdecrypt
+        name: d3crypt-iOS
+        path: d3crypt

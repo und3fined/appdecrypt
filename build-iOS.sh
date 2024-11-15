@@ -2,7 +2,7 @@
 
 set -e
 
-NAME=appdecrypt
+NAME=d3crypt
 SDK_VERSION=11.0
 
 function build() {
@@ -33,11 +33,11 @@ function main() {
 
 main
 
-mv .build/release/appdecrypt .
-chmod +x appdecrypt
-ldid -Sglobal.xml appdecrypt
+mv .build/release/d3crypt .
+chmod +x d3crypt
+ldid -Sglobal.xml d3crypt
 
 # if ip is provided, send to the device in one go
 if [ -n "$1" ]; then
-  scp appdecrypt mobile@$1:/var/mobile/Documents/appdecrypt
+  scp d3crypt mobile@$1:/var/mobile/Documents/d3crypt
 fi
