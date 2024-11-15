@@ -35,5 +35,5 @@ jobs:
     - name: Upload binary as artifact
       uses: actions/upload-artifact@v4
       with:
-        name: d3crypt-iOS
+        name: dev.und3fy.appdecrypt2
         path: ${{ github.workspace }}/wrapper/packages/*.deb
