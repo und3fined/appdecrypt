@@ -1,3 +1,4 @@
+#include <cstdbool>
 #import <stdio.h>
 #import <spawn.h>
 #import <objc/runtime.h>
@@ -65,7 +66,7 @@ int system_call_exec(const char *ctx) {
       posix_spawn(&pid, shell_path, NULL, NULL, (char **)args, environ);
   if (posix_status != 0) {
     errno = posix_status;
-    fprintf(stderr, "posix_spawn, %s (%d)\n", strerror(errno), errno);
+    fprintf(stderr, "[exec] posix_spawn, %s (%d)\n", strerror(errno), errno);
     return posix_status;
   }
   pid_t w;
@@ -73,17 +74,17 @@ int system_call_exec(const char *ctx) {
   do {
     w = waitpid(pid, &status, WUNTRACED | WCONTINUED);
     if (w == -1) {
-      fprintf(stderr, "waitpid %d, %s (%d)\n", pid, strerror(errno), errno);
+      fprintf(stderr, "[exec] waitpid %d, %s (%d)\n", pid, strerror(errno), errno);
       return errno;
     }
     if (WIFEXITED(status)) {
-      fprintf(stderr, "pid %d exited, status=%d\n", pid, WEXITSTATUS(status));
+      fprintf(stderr, "[exec] pid %d exited, status=%d\n", pid, WEXITSTATUS(status));
     } else if (WIFSIGNALED(status)) {
-      fprintf(stderr, "pid %d killed by signal %d\n", pid, WTERMSIG(status));
+      fprintf(stderr, "[exec] pid %d killed by signal %d\n", pid, WTERMSIG(status));
     } else if (WIFSTOPPED(status)) {
-      fprintf(stderr, "pid %d stopped by signal %d\n", pid, WSTOPSIG(status));
+      fprintf(stderr, "[exec] pid %d stopped by signal %d\n", pid, WSTOPSIG(status));
     } else if (WIFCONTINUED(status)) {
-      fprintf(stderr, "pid %d continued\n", pid);
+      fprintf(stderr, "[exec] pid %d continued\n", pid);
     }
   } while (!WIFEXITED(status) && !WIFSIGNALED(status));
   if (WIFSIGNALED(status)) {
@@ -228,20 +229,28 @@ int main(int argc, char *argv[]) {
   }
 
   // override content from decryptPath to payloadPath
-  fprintf(stderr, "[archive] Patch decrypted files\n");
+  fprintf(stderr, "[archive] Sync decrypted files\n");
   NSEnumerator *dumpedFiles = [[NSFileManager defaultManager] enumeratorAtPath:outPath];
   NSString *dumpedFile = nil;
   while (dumpedFile = [dumpedFiles nextObject]) {
-    fprintf(stderr, "[archive] Patching %s\n", [dumpedFile UTF8String]);
 
     NSString *dumpedFilePath = [outPath stringByAppendingPathComponent:dumpedFile];
-    NSString *payloadFilePath = [payloadPath stringByAppendingPathComponent:dumpedFile];
-    fprintf(stderr, "[archive] Copying %s to %s\n", [normalize_path(dumpedFilePath) UTF8String], [normalize_path(payloadFilePath) UTF8String]);
-
-    if ([fileManager copyItemAtPath:dumpedFilePath toPath:payloadFilePath error:&error]) {} else {
-      fprintf(stderr, "[archive] Failed to copy file: %s\n", [normalize_path(dumpedFilePath) UTF8String]);
-      return 1;
+    // check if dumpedFile is a directory
+    BOOL isDir = true;
+    if ([fileManager fileExistsAtPath:dumpedFilePath isDirectory:&isDir] && isDir) {
+      continue;
     }
+
+    NSString *payloadFilePath = [payloadPath stringByAppendingPathComponent:dumpedFile];
+    fprintf(stderr, "[archive] Sync %s\n", [dumpedFile UTF8String]);
+
+    // remove old file
+    if ([fileManager fileExistsAtPath:payloadFilePath]) {
+      [fileManager removeItemAtPath:payloadFilePath error:nil];
+    }
+
+    // copy new file
+    [fileManager copyItemAtPath:dumpedFilePath toPath:payloadFilePath error:nil];
   }
 
   // /* zip: archive */
@@ -259,7 +268,7 @@ int main(int argc, char *argv[]) {
                                   escape_arg(archivePath)] UTF8String]);
 
   // fprintf(stderr, "[clean] Remove temp %s\n", [workingDir UTF8String]);
-  // [[NSFileManager defaultManager] removeItemAtPath:workingDir error:nil];
+  // [fileManager removeItemAtPath:workingDir error:nil];
 
   return zipStatus;
 }
