@@ -37,28 +37,35 @@ class Dump {
 
     var ignoreIOSOnlyCheck = false
     ignoreIOSOnlyCheck = CommandLine.arguments.contains("--ignore-ios-check")
+    var ignoreCopy = false
+    ignoreCopy = CommandLine.arguments.contains("-b") || CommandLine.arguments.contains("--binary")
 
     #if os(iOS)
-      if !targetUrl.hasSuffix("/Payload") {
+      if !targetUrl.hasSuffix("/Payload") && ignoreCopy == false {
         targetUrl += "/Payload"
       }
     #endif
-    do {
-      consoleIO.writeMessage("Copy From \(sourceUrl) to \(targetUrl)")
-      var isDirectory: ObjCBool = false
-      if fileManager.fileExists(atPath: targetUrl, isDirectory: &isDirectory) {
-        // remove old files to ensure the integrity of the dump
-        if isDirectory.boolValue && !targetUrl.hasSuffix(".app") {
-          consoleIO.writeMessage("\(targetUrl) is a Directory")
-        } else {
-          try fileManager.removeItem(atPath: targetUrl)
-          consoleIO.writeMessage("Success to remove \(targetUrl)")
+
+    if ignoreCopy == false {
+      do {
+        consoleIO.writeMessage("Copy From \(sourceUrl) to \(targetUrl)")
+        var isDirectory: ObjCBool = false
+        if fileManager.fileExists(atPath: targetUrl, isDirectory: &isDirectory) {
+          // remove old files to ensure the integrity of the dump
+          if isDirectory.boolValue && !targetUrl.hasSuffix(".app") {
+            consoleIO.writeMessage("\(targetUrl) is a Directory")
+          } else {
+            try fileManager.removeItem(atPath: targetUrl)
+            consoleIO.writeMessage("Success to remove \(targetUrl)")
+          }
         }
+        try fileManager.copyItem(atPath: sourceUrl, toPath: targetUrl)
+        consoleIO.writeMessage("Success to copy file.")
+      } catch let e {
+        consoleIO.writeMessage("Failed With \(e)", to: .error)
       }
-      try fileManager.copyItem(atPath: sourceUrl, toPath: targetUrl)
-      consoleIO.writeMessage("Success to copy file.")
-    } catch let e {
-      consoleIO.writeMessage("Failed With \(e)", to: .error)
+    } else {
+      consoleIO.writeMessage("Just dump without copy app files.")
     }
 
     var needDumpFilePaths = [String]()

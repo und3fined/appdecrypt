@@ -38,7 +38,7 @@ class ConsoleIO {
         iPhone:
           appdecrypt /var/containers/Bundle/Application/XXXXXX /tmp
 
-      USAGE: appdecrypt encryptMachO_Path decryptMachO_Path
+      USAGE: appdecrypt encryptMachO_Path decryptMachO_Path [OPTIONS]
 
       ARGUMENTS:
         <encryptApp_Path>     The encrypt app file path.
@@ -46,6 +46,7 @@ class ConsoleIO {
 
       OPTIONS:
         -h, --help              Show help information.
+        -b, --binary            No copy app data, only decrypt binary.
         --ignore-ios-check      Decrypt the app even if M1 can't run it.
       """)
     DispatchQueue.main.async {
