@@ -173,7 +173,7 @@ int main(int argc, char *argv[]) {
 
   NSFileManager *fileManager = [NSFileManager defaultManager];
   NSString *homeDir = [fileManager currentDirectoryPath];
-  NSString *workingDir = [NSString stringWithFormat:@"Documents/appdecrypt/%@_%@", [appProxy applicationIdentifier], [appProxy shortVersionString]];
+  NSString *workingDir = [NSString stringWithFormat:@"appdecrypt/%@_%@", [appProxy applicationIdentifier], [appProxy shortVersionString]];
 
   NSString *dumpPathName = [NSString stringWithFormat:@"%@/dump", workingDir];
   NSString *outPath = [NSString stringWithFormat:@"%@/%@", homeDir, dumpPathName];
@@ -193,7 +193,7 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  fprintf(stderr, "[dump] Dumping to ./%s\n", [normalize_path(outPath) UTF8String]);
+  fprintf(stderr, "[dump] Dumping to .%s\n", [normalize_path(outPath) UTF8String]);
 
   NSString *decryptPath = [NSString stringWithFormat:@".%@", normalize_path(outPath)];
   system_call_exec([[NSString stringWithFormat:@"d3crypt '%@' '%@' -b", escape_arg(targetPath), escape_arg(decryptPath)] UTF8String]);
@@ -205,7 +205,7 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  fprintf(stderr, "[dump] Done\n");
+  fprintf(stderr, "[dump] Successful!\n");
 
   fprintf(stderr, "[archive] Start make ipa...\n");
   NSString *payloadPathName = [NSString stringWithFormat:@"%@/Payload", workingDir];
@@ -220,7 +220,7 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  fprintf(stderr, "[archive] Copying app files to ./%s\n", [normalize_path(payloadPath) UTF8String]);
+  fprintf(stderr, "[archive] Copying app files to .%s\n", [normalize_path(payloadPath) UTF8String]);
   BOOL didCopy = [fileManager copyItemAtPath:targetPath toPath:payloadPath error:&error];
   if (!didCopy) {
     fprintf(stderr, "[archive] Failed to copy Payload: %s\n", [normalize_path(payloadPath) UTF8String]);
@@ -232,14 +232,12 @@ int main(int argc, char *argv[]) {
   NSEnumerator *dumpedFiles = [[NSFileManager defaultManager] enumeratorAtPath:outPath];
   NSString *dumpedFile = nil;
   while (dumpedFile = [dumpedFiles nextObject]) {
+    fprintf(stderr, "[archive] Patching %s\n", [dumpedFile UTF8String]);
+
     NSString *dumpedFilePath = [outPath stringByAppendingPathComponent:dumpedFile];
     NSString *payloadFilePath = [payloadPath stringByAppendingPathComponent:dumpedFile];
-    if ([fileManager fileExistsAtPath:payloadFilePath]) {
-      if ([fileManager removeItemAtPath:payloadFilePath error:&error]) {} else {
-        fprintf(stderr, "[archive] Failed to remove file: %s\n", [normalize_path(payloadFilePath) UTF8String]);
-        return 1;
-      }
-    }
+    fprintf(stderr, "[archive] Copying %s to %s\n", [normalize_path(dumpedFilePath) UTF8String], [normalize_path(payloadFilePath) UTF8String]);
+
     if ([fileManager copyItemAtPath:dumpedFilePath toPath:payloadFilePath error:&error]) {} else {
       fprintf(stderr, "[archive] Failed to copy file: %s\n", [normalize_path(dumpedFilePath) UTF8String]);
       return 1;
@@ -248,7 +246,7 @@ int main(int argc, char *argv[]) {
 
   // /* zip: archive */
   fprintf(stderr, "[archive] Create archive ipa...\n");
-  NSString *archiveName = [NSString stringWithFormat:@"Documents/appdecrypt/%@_%@_und3fined.ipa", [appProxy localizedName], [appProxy shortVersionString]];
+  NSString *archiveName = [NSString stringWithFormat:@"appdecrypt/%@_%@_und3fined.ipa", [appProxy applicationIdentifier], [appProxy shortVersionString]];
   NSString *archivePath = [NSString stringWithFormat:@"%@/%@", homeDir, archiveName];
 
   // force remove archivePath
@@ -260,8 +258,8 @@ int main(int argc, char *argv[]) {
                                   escape_arg(payloadPath),
                                   escape_arg(archivePath)] UTF8String]);
 
-  fprintf(stderr, "[clean] Remove temp %s\n", [workingDir UTF8String]);
-  [[NSFileManager defaultManager] removeItemAtPath:workingDir error:nil];
+  // fprintf(stderr, "[clean] Remove temp %s\n", [workingDir UTF8String]);
+  // [[NSFileManager defaultManager] removeItemAtPath:workingDir error:nil];
 
   return zipStatus;
 }
