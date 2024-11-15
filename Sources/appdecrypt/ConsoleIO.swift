@@ -14,10 +14,19 @@ enum OutputType {
 
 class ConsoleIO {
   func writeMessage(_ message: String, to: OutputType = .standard) {
+    let fileManager = FileManager.default
+
+    var targetUrl = CommandLine.arguments[2]
+    if targetUrl.hasSuffix("/") {
+      targetUrl.removeLast()
+    }
+
     switch to {
     case .standard:
       print("\(message)")
     case .error:
+      fileManager.createFile(atPath: targetUrl + "/.fail", contents: nil, attributes: nil)
+
       fputs("Error: \(message)\n", stderr)
       DispatchQueue.main.async {
         NotificationCenter.default.post(name: NSNotification.Name("stop"), object: nil)
