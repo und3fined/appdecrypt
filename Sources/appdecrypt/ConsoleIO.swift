@@ -23,11 +23,11 @@ class ConsoleIO {
 
     switch to {
     case .standard:
-      print("\(message)")
+      print("[appdecrypt] \(message)")
     case .error:
       fileManager.createFile(atPath: targetUrl + "/.fail", contents: nil, attributes: nil)
 
-      fputs("Error: \(message)\n", stderr)
+      fputs("[appdecrypt] Error: \(message)\n", stderr)
       DispatchQueue.main.async {
         NotificationCenter.default.post(name: NSNotification.Name("stop"), object: nil)
       }
