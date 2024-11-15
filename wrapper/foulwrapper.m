@@ -1,5 +1,3 @@
-#include <Foundation/NSString.h>
-#include <cstdio>
 #import <stdio.h>
 #import <spawn.h>
 #import <objc/runtime.h>
