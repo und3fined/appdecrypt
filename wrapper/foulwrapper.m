@@ -1,3 +1,4 @@
+#include <Foundation/NSString.h>
 #import <stdio.h>
 #import <spawn.h>
 #import <objc/runtime.h>
@@ -172,23 +173,37 @@ int main(int argc, char *argv[]) {
   assert(appProxy);
 
   NSFileManager *fileManager = [NSFileManager defaultManager];
+  NSString *homeDir = [[fileManager homeDirectoryForCurrentUser] path];
 
-  NSString *outPathName = [NSString stringWithFormat:@"Documents/appdecrypt/%@_%@/dump", [appProxy applicationIdentifier], [appProxy shortVersionString]];
-  NSString *outPath = [[fileManager currentDirectoryPath] stringByAppendingPathComponent:outPathName];
+  NSString *dumpPathName = [NSString stringWithFormat:@"Documents/appdecrypt/%@_%@/dump", [appProxy applicationIdentifier], [appProxy shortVersionString]];
+  NSString *outPath = [NSString stringWithFormat:@"%@/%@", homeDir, dumpPathName];
+
+  // check outPath exists
+  if ([fileManager fileExistsAtPath:outPath isDirectory:true]) {
+    fprintf(stderr, "[dump] Dump directory already exists. AUTO CLEANUP!\n");
+    if ([fileManager removeItemAtPath:outPath error:&error]) {
+      fprintf(stderr, "[dump] Removed directory: .%s\n", [normalize_path(outPath) UTF8String]);
+    } else {
+      fprintf(stderr, "[dump] Failed to remove directory: %s\n", [normalize_path(outPath) UTF8String]);
+      return 1;
+    }
+  }
 
   if ([fileManager createDirectoryAtPath:outPath withIntermediateDirectories:YES attributes:nil error:&error]) {
-    fprintf(stderr, "[dump] Created directory: %s\n", [normalize_path(outPath) UTF8String]);
+    fprintf(stderr, "[dump] Created directory: .%s\n", [normalize_path(outPath) UTF8String]);
   } else {
     fprintf(stderr, "[dump] Failed to create directory: %s\n", [normalize_path(outPath) UTF8String]);
     return 1;
   }
 
   NSString *decryptPath = [NSString stringWithFormat:@".%@", normalize_path(outPath)];
-  int dumpStatus = system_call_exec([[NSString stringWithFormat:@"d3crypt '%@' '%@' -b", escape_arg(targetPath), escape_arg(decryptPath)] UTF8String]);
+  system_call_exec([[NSString stringWithFormat:@"d3crypt '%@' '%@' -b", escape_arg(targetPath), escape_arg(decryptPath)] UTF8String]);
 
-  if (dumpStatus != 0) {
-    fprintf(stderr, "[dump] Failed\n");
-    return dumpStatus;
+  // check .fail in outPath
+  NSString *failPath = [NSString stringWithFormat:@"%@/.fail", outPath];
+  if ([fileManager fileExistsAtPath:failPath]) {
+    fprintf(stderr, "[dump] Failed to dump!\n");
+    return 1;
   }
 
   fprintf(stderr, "[dump] Done\n");
