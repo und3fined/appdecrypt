@@ -182,20 +182,18 @@ int main(int argc, char *argv[]) {
   BOOL isDir = true;
   if ([fileManager fileExistsAtPath:outPath isDirectory:&isDir]) {
     fprintf(stderr, "[dump] Dump directory already exists. AUTO CLEANUP!\n");
-    if ([fileManager removeItemAtPath:outPath error:&error]) {
-      fprintf(stderr, "[dump] Removed directory: .%s\n", [normalize_path(outPath) UTF8String]);
-    } else {
+    if ([fileManager removeItemAtPath:outPath error:&error]) {} else {
       fprintf(stderr, "[dump] Failed to remove directory: %s\n", [normalize_path(outPath) UTF8String]);
       return 1;
     }
   }
 
-  if ([fileManager createDirectoryAtPath:outPath withIntermediateDirectories:YES attributes:nil error:&error]) {
-    fprintf(stderr, "[dump] Created directory: .%s\n", [normalize_path(outPath) UTF8String]);
-  } else {
+  if ([fileManager createDirectoryAtPath:outPath withIntermediateDirectories:YES attributes:nil error:&error]) {} else {
     fprintf(stderr, "[dump] Failed to create directory: %s\n", [normalize_path(outPath) UTF8String]);
     return 1;
   }
+
+  fprintf(stderr, "[dump] Dumping to ./%s\n", [normalize_path(outPath) UTF8String]);
 
   NSString *decryptPath = [NSString stringWithFormat:@".%@", normalize_path(outPath)];
   system_call_exec([[NSString stringWithFormat:@"d3crypt '%@' '%@' -b", escape_arg(targetPath), escape_arg(decryptPath)] UTF8String]);
