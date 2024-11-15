@@ -141,9 +141,6 @@ class Dump {
 
         // create dir
         let dirPath = dumpedDirPaths[i]
-
-        // check if dir exists
-
         do {
           var isDirectory: ObjCBool = true
           if fileManager.fileExists(atPath: dirPath, isDirectory: &isDirectory) == false {
