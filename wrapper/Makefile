@@ -16,4 +16,5 @@ foulwrapper2_PRIVATE_FRAMEWORKS = MobileContainerManager
 include $(THEOS_MAKE_PATH)/tool.mk
 
 before-package::
-	cp ../d3crypt $(THEOS_STAGING_DIR)/var/jb/usr/local/bin/
+	ls -lah $(THEOS_STAGING_DIR)
+	cp ../d3crypt $(THEOS_STAGING_DIR)/usr/local/bin/
