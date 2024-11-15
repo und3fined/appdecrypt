@@ -7,10 +7,10 @@ let package = Package(
   products: [
     .executable(
       name: "d3crypt",
-      targets: ["d3crypt"]
+      targets: ["appdecrypt"]
     )
   ],
   targets: [
-    .target(name: "d3crypt")
+    .target(name: "appdecrypt")
   ]
 )
