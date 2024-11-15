@@ -23,8 +23,17 @@ jobs:
     - name: Build
       run: ./build-iOS.sh
 
+    - name: Prepare Theos
+      uses: und3fined/theos-action@main
+
+    - name: Build package
+      run: |
+        cd wapper
+        rm -f packages/*
+        make package FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
+
     - name: Upload binary as artifact
       uses: actions/upload-artifact@v4
       with:
         name: d3crypt-iOS
-        path: d3crypt
+        path: ${{ github.workspace }}/wrapper/packages/*.deb
