@@ -1,4 +1,5 @@
 #include <Foundation/NSString.h>
+#include <cstdio>
 #import <stdio.h>
 #import <spawn.h>
 #import <objc/runtime.h>
@@ -174,8 +175,9 @@ int main(int argc, char *argv[]) {
 
   NSFileManager *fileManager = [NSFileManager defaultManager];
   NSString *homeDir = [fileManager currentDirectoryPath];
+  NSString *workingDir = [NSString stringWithFormat:@"Documents/appdecrypt/%@_%@", [appProxy applicationIdentifier], [appProxy shortVersionString]];
 
-  NSString *dumpPathName = [NSString stringWithFormat:@"Documents/appdecrypt/%@_%@/dump", [appProxy applicationIdentifier], [appProxy shortVersionString]];
+  NSString *dumpPathName = [NSString stringWithFormat:@"%@/dump", workingDir];
   NSString *outPath = [NSString stringWithFormat:@"%@/%@", homeDir, dumpPathName];
 
   // check outPath exists
@@ -207,20 +209,61 @@ int main(int argc, char *argv[]) {
 
   fprintf(stderr, "[dump] Done\n");
 
-  return 0;
+  fprintf(stderr, "[archive] Start make ipa...\n");
+  NSString *payloadPathName = [NSString stringWithFormat:@"%@/Payload", workingDir];
+  NSString *payloadPath = [NSString stringWithFormat:@"%@/%@", homeDir, payloadPathName];
+
+  // check payloadPath exists
+  if ([fileManager fileExistsAtPath:payloadPath isDirectory:&isDir]) {
+    fprintf(stderr, "[archive] Payload directory already exists. AUTO CLEANUP!\n");
+    if ([fileManager removeItemAtPath:payloadPath error:&error]) {} else {
+      fprintf(stderr, "[archive] Failed to remove directory: %s\n", [normalize_path(payloadPath) UTF8String]);
+      return 1;
+    }
+  }
+
+  fprintf(stderr, "[archive] Copying app files to ./%s\n", [normalize_path(payloadPath) UTF8String]);
+  BOOL didCopy = [fileManager copyItemAtPath:targetPath toPath:payloadPath error:&error];
+  if (!didCopy) {
+    fprintf(stderr, "[archive] Failed to copy Payload: %s\n", [normalize_path(payloadPath) UTF8String]);
+    return 1;
+  }
+
+  // override content from decryptPath to payloadPath
+  fprintf(stderr, "[archive] Patch decrypted files\n");
+  NSEnumerator *dumpedFiles = [[NSFileManager defaultManager] enumeratorAtPath:outPath];
+  NSString *dumpedFile = nil;
+  while (dumpedFile = [dumpedFiles nextObject]) {
+    NSString *dumpedFilePath = [outPath stringByAppendingPathComponent:dumpedFile];
+    NSString *payloadFilePath = [payloadPath stringByAppendingPathComponent:dumpedFile];
+    if ([fileManager fileExistsAtPath:payloadFilePath]) {
+      if ([fileManager removeItemAtPath:payloadFilePath error:&error]) {} else {
+        fprintf(stderr, "[archive] Failed to remove file: %s\n", [normalize_path(payloadFilePath) UTF8String]);
+        return 1;
+      }
+    }
+    if ([fileManager copyItemAtPath:dumpedFilePath toPath:payloadFilePath error:&error]) {} else {
+      fprintf(stderr, "[archive] Failed to copy file: %s\n", [normalize_path(dumpedFilePath) UTF8String]);
+      return 1;
+    }
+  }
 
   // /* zip: archive */
-  // NSString *archiveName = [NSString stringWithFormat:@"%@_%@_dumped.ipa", [appProxy localizedName], [appProxy shortVersionString]];
-  // NSString *archivePath = [[[NSFileManager defaultManager] currentDirectoryPath]
-  //     stringByAppendingPathComponent:archiveName];
-  // BOOL didClean = [[NSFileManager defaultManager] removeItemAtPath:archivePath
-  //                                                            error:nil];
+  fprintf(stderr, "[archive] Create archive ipa...\n");
+  NSString *archiveName = [NSString stringWithFormat:@"Documents/appdecrypt/%@_%@_und3fined.ipa", [appProxy localizedName], [appProxy shortVersionString]];
+  NSString *archivePath = [NSString stringWithFormat:@"%@/%@", homeDir, archiveName];
 
-  // int zipStatus = system_call_exec(
-  //     [[NSString stringWithFormat:@"set -e; shopt -s dotglob; cd '%@'; zip -r "
-  //                                 @"'%@' .; shopt -u dotglob;",
-  //                                 escape_arg([tempURL path]),
-  //                                 escape_arg(archivePath)] UTF8String]);
+  // force remove archivePath
+  BOOL didClean = [fileManager removeItemAtPath:archivePath error:nil];
 
-  // return zipStatus;
+  int zipStatus = system_call_exec(
+      [[NSString stringWithFormat:@"set -e; shopt -s dotglob; cd '%@'; zip -r "
+                                  @"'%@' .; shopt -u dotglob;",
+                                  escape_arg(payloadPath),
+                                  escape_arg(archivePath)] UTF8String]);
+
+  fprintf(stderr, "[clean] Remove temp %s\n", [workingDir UTF8String]);
+  [[NSFileManager defaultManager] removeItemAtPath:workingDir error:nil];
+
+  return zipStatus;
 }
