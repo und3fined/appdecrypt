@@ -25,7 +25,15 @@ class ConsoleIO {
     case .standard:
       print("[appdecrypt] \(message)")
     case .error:
-      fileManager.createFile(atPath: targetUrl + "/.fail", contents: nil, attributes: nil)
+      if fileManager.fileExists(atPath: targetUrl + "/.fail") {
+        let fileObj = FileHandle(forWritingAtPath: targetUrl + "/.fail")
+        fileObj?.seekToEndOfFile()
+        fileObj?.write(message.data(using: .utf8)!)
+        fileObj?.closeFile()
+      } else {
+        fileManager.createFile(
+          atPath: targetUrl + "/.fail", contents: message.data(using: .utf8), attributes: nil)
+      }
 
       fputs("[appdecrypt] Error: \(message)\n", stderr)
       DispatchQueue.main.async {
