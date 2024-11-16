@@ -211,6 +211,13 @@ int main(int argc, char *argv[]) {
   NSString *failPath = [NSString stringWithFormat:@"%@/.fail", outPath];
   if ([fileManager fileExistsAtPath:failPath]) {
     fprintf(stderr, "[dump] Failed to dump!\n");
+
+    // print error in .fail
+    NSString *failContent = [NSString stringWithContentsOfFile:failPath encoding:NSUTF8StringEncoding error:nil];
+    fprintf(stderr, "%s\n\n", [failContent UTF8String]);
+
+    fprintf(stderr, "[clean] Remove temp %s\n", [workingDir UTF8String]);
+    [fileManager removeItemAtPath:workingDir error:nil];
     return 1;
   }
 
