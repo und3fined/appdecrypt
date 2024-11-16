@@ -16,7 +16,7 @@ class ConsoleIO {
 
   func normalizedPath(_ src: String, _ msg: String) -> String {
     // replace src in msg with ~
-    return msg.replacingOccurrences(of: src, with: "~")
+    return msg.replacingOccurrences(of: src, with: "@")
   }
 
   func writeMessage(_ message: String, to: OutputType = .standard) {
