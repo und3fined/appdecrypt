@@ -268,6 +268,29 @@ int main(int argc, char *argv[]) {
     [fileManager copyItemAtPath:dumpedFilePath toPath:payloadFilePath error:nil];
   }
 
+  // remove unused files
+  NSString *mobileContainerManager = [payloadPath stringByAppendingPathComponent:@".com.apple.mobile_container_manager.metadata.plist"];
+  NSString *bundleMetadata = [payloadPath stringByAppendingPathComponent:@"BundleMetadata.plist"];
+  NSString *iTunesMetadata = [payloadPath stringByAppendingPathComponent:@"iTunesMetadata.plist"];
+  [fileManager removeItemAtPath:mobileContainerManager error:nil];
+  [fileManager removeItemAtPath:bundleMetadata error:nil];
+  [fileManager removeItemAtPath:iTunesMetadata error:nil];
+  fprintf(stderr, "[archive] Removed unused files");
+
+  // remove UISupportedDevices
+  NSArray *payloadContents = [fileManager contentsOfDirectoryAtPath:payloadPath error:nil];
+  for (NSString *file in payloadContents) {
+    if ([file hasSuffix:@".app"]) {
+      NSString *infoPlistPath = [payloadPath stringByAppendingPathComponent:[file stringByAppendingPathComponent:@"Info.plist"]];
+      NSMutableDictionary *infoPlist = [NSMutableDictionary dictionaryWithContentsOfFile:infoPlistPath];
+      [infoPlist removeObjectForKey:@"UISupportedDevices"];
+      [infoPlist writeToFile:infoPlistPath atomically:YES];
+
+      NSString *signPath = [payloadPath stringByAppendingPathComponent:[file stringByAppendingPathComponent:@"decrypt.day"]];
+      [fileManager createFileAtPath:signPath contents:[@"und3fined" dataUsingEncoding:NSUTF8StringEncoding] attributes:nil];
+    }
+  }
+
   // /* zip: archive */
   fprintf(stderr, "[archive] Create archive ipa...\n");
   NSString *archiveName = [NSString stringWithFormat:@"appdecrypt/%@_%@_und3fined.ipa", [appProxy applicationIdentifier], [appProxy shortVersionString]];
