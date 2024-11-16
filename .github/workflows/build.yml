@@ -39,7 +39,7 @@ jobs:
   #       path: ${{ github.workspace }}/wrapper/packages/*.deb
 
   build_openf:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
     - name: Check out source code
@@ -52,8 +52,6 @@ jobs:
 
     - name: Build
       run: |
-        sudo apt install build-essential -y
-        sudo apt-get install gcc-multilib -y
         cd openf
         cargo build --release --target aarch64-apple-ios
 
