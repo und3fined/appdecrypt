@@ -196,7 +196,8 @@ class Dump {
                       command.pointee.cryptid = 0
                       consoleIO.writeMessage("Dump \(sourcePath) Success")
                     } else {
-                      consoleIO.writeMessage("Dump \(sourcePath) fail, because of \(result.1)")
+                      consoleIO.writeMessage(
+                        "Dump \(sourcePath) fail, because of \(result.1)", to: .error)
                     }
                     break
                   }
