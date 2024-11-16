@@ -55,12 +55,11 @@ jobs:
         clang --version
         # download https://github.com/frida/frida/releases/download/16.5.7/frida-core-devkit-16.5.7-ios-arm64.tar.xz with curl
         curl -L https://github.com/frida/frida/releases/download/16.5.7/frida-core-devkit-16.5.7-ios-arm64.tar.xz -o frida-core-devkit-16.5.7-ios-arm64.tar.xz
-        tar -xf frida-core-devkit-16.5.7-ios-arm64.tar.xz
+        tar -xvf frida-core-devkit-16.5.7-ios-arm64.tar.xz
         curl -L https://github.com/frida/frida/releases/download/16.5.7/frida-gum-devkit-16.5.7-ios-arm64.tar.xz -o frida-gum-devkit-16.5.7-ios-arm64.tar.xz
-        tar -xf frida-gum-devkit-16.5.7-ios-arm64.tar.xz
+        tar -xvf frida-gum-devkit-16.5.7-ios-arm64.tar.xz
 
-        ls -lah frida-core-devkit-16.5.7-ios-arm64
-        ls -lah frida-gum-devkit-16.5.7-ios-arm64
+        ls -lah .
 
         # copy frida headers
         cp -f frida-core-devkit-16.5.7-ios-arm64/frida-core.h /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/
