@@ -39,7 +39,7 @@ jobs:
   #       path: ${{ github.workspace }}/wrapper/packages/*.deb
 
   build_openf:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     steps:
     - name: Check out source code
@@ -60,15 +60,19 @@ jobs:
         tar -xf frida-gum-devkit-16.5.7-ios-arm64.tar.xz
 
         # copy frida headers
-        cp -f frida-core.h /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/
-        cp -f frida-gum.h /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/
-        sudo cp -f frida-core.h /Library/Developer/CommandLineTools/usr/include/
-        sudo cp -f frida-gum.h /Library/Developer/CommandLineTools/usr/include/
+        # cp -f frida-core.h /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/
+        # cp -f frida-gum.h /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/
+        # sudo cp -f frida-core.h /Library/Developer/CommandLineTools/usr/include/
+        # sudo cp -f frida-gum.h /Library/Developer/CommandLineTools/usr/include/
+        sudo cp -f frida-core.h /usr/local/include/
+        sudo cp -f frida-gum.h /usr/local/include/
         # copy frida libraries
-        cp -f libfrida-core.a /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/
-        cp -f libfrida-gum.a /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/
-        sudo cp -f libfrida-core.a /Library/Developer/CommandLineTools/usr/lib/
-        sudo cp -f libfrida-gum.a /Library/Developer/CommandLineTools/usr/lib/
+        # cp -f libfrida-core.a /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/
+        # cp -f libfrida-gum.a /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/
+        # sudo cp -f libfrida-core.a /Library/Developer/CommandLineTools/usr/lib/
+        # sudo cp -f libfrida-gum.a /Library/Developer/CommandLineTools/usr/lib/
+        sudo cp -f libfrida-core.a /usr/local/lib/
+        sudo cp -f libfrida-gum.a /usr/local/lib/
 
     - name: Build
       run: |
