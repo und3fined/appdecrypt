@@ -223,7 +223,7 @@ int main(int argc, char *argv[]) {
 
   fprintf(stderr, "[dump] Successful!\n");
 
-  fprintf(stderr, "[archive] Start make ipa...\n");
+  fprintf(stderr, "[archive] Start create ipa...\n");
   NSString *payloadPathName = [NSString stringWithFormat:@"%@/Payload", workingDir];
   NSString *payloadPath = [NSString stringWithFormat:@"%@/%@", homeDir, payloadPathName];
 
@@ -275,7 +275,7 @@ int main(int argc, char *argv[]) {
   [fileManager removeItemAtPath:mobileContainerManager error:nil];
   [fileManager removeItemAtPath:bundleMetadata error:nil];
   [fileManager removeItemAtPath:iTunesMetadata error:nil];
-  fprintf(stderr, "[archive] Removed unused files");
+  fprintf(stderr, "[archive] Removed unused files.\n");
 
   // remove UISupportedDevices
   NSArray *payloadContents = [fileManager contentsOfDirectoryAtPath:payloadPath error:nil];
@@ -299,7 +299,7 @@ int main(int argc, char *argv[]) {
   // force remove archivePath
   BOOL didClean = [fileManager removeItemAtPath:archivePath error:nil];
 
-  fprintf(stderr, "[archive] save to ./%s\n", [normalize_path(archivePath) UTF8String]);
+  fprintf(stderr, "[archive] Save to .%s\n", [normalize_path(archivePath) UTF8String]);
 
   int zipStatus = system_call_exec([[NSString stringWithFormat:@"set -e; shopt -s dotglob; cd '%@'; zip -rq '%@' Payload; shopt -u dotglob;",
                                   escape_arg(workingDir),
@@ -310,10 +310,9 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  fprintf(stderr, "[archive] Successful!\n");
-
-  fprintf(stderr, "[clean] Remove temp %s\n", [workingDir UTF8String]);
+  fprintf(stderr, "[dump] Remove temp %s\n", [workingDir UTF8String]);
   [fileManager removeItemAtPath:workingDir error:nil];
 
-  return zipStatus;
+  fprintf(stderr, "[dump] Done!\n");
+  return 0;
 }
