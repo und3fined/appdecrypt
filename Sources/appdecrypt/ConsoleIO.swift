@@ -44,7 +44,7 @@ class ConsoleIO {
         fileObj?.write("\n\(nextMessage)".data(using: .utf8)!)
         fileObj?.closeFile()
       } else {
-        let failContent = "Target: \(targetUrl)\n\(nextMessage)"
+        let failContent = "Target: \(sourceUrl)\n\(nextMessage)"
         fileManager.createFile(
           atPath: targetUrl + "/.fail", contents: failContent.data(using: .utf8), attributes: nil)
       }
