@@ -13,8 +13,19 @@ enum OutputType {
 }
 
 class ConsoleIO {
+
+  func normalizedPath(_ src: String, _ msg: String) -> String {
+    // replace src in msg with ~
+    return msg.replacingOccurrences(of: src, with: "~")
+  }
+
   func writeMessage(_ message: String, to: OutputType = .standard) {
     let fileManager = FileManager.default
+
+    var sourceUrl = CommandLine.arguments[1]
+    if sourceUrl.hasSuffix("/") {
+      sourceUrl.removeLast()
+    }
 
     var targetUrl = CommandLine.arguments[2]
     if targetUrl.hasSuffix("/") {
@@ -23,7 +34,7 @@ class ConsoleIO {
 
     switch to {
     case .standard:
-      print("[appdecrypt] \(message)")
+      print("[appdecrypt] \(self.normalizedPath(sourceUrl, message))")
     case .error:
       if fileManager.fileExists(atPath: targetUrl + "/.fail") {
         let fileObj = FileHandle(forWritingAtPath: targetUrl + "/.fail")
@@ -35,7 +46,7 @@ class ConsoleIO {
           atPath: targetUrl + "/.fail", contents: message.data(using: .utf8), attributes: nil)
       }
 
-      fputs("[appdecrypt] Error: \(message)\n", stderr)
+      fputs("[appdecrypt] Error: \(self.normalizedPath(sourceUrl, message))\n", stderr)
       DispatchQueue.main.async {
         NotificationCenter.default.post(name: NSNotification.Name("stop"), object: nil)
       }
