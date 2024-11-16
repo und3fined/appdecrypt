@@ -257,7 +257,7 @@ int main(int argc, char *argv[]) {
     }
 
     NSString *payloadFilePath = [payloadPath stringByAppendingPathComponent:dumpedFile];
-    fprintf(stderr, "[archive] Sync %s\n", [dumpedFile UTF8String]);
+    // fprintf(stderr, "[archive] Sync %s\n", [dumpedFile UTF8String]);
 
     // remove old file
     if ([fileManager fileExistsAtPath:payloadFilePath]) {
