@@ -202,7 +202,7 @@ int main(int argc, char *argv[]) {
   // close the app with kill command
   fprintf(stderr, "[dump] Close the app... %s\n", [targetPath UTF8String]);
   system_call_exec([
-                  [NSString stringWithFormat:@"set -e; shopt -s dotglob; ps aux | grep '%@' | tr -s ' ' | cut -d ' ' -f 2 | xargs sudo kill -9; shopt -u dotglob;",
+                  [NSString stringWithFormat:@"set -e; shopt -s dotglob; ps aux | grep -i '%@' | tr -s ' ' | cut -d ' ' -f 2 | xargs sudo kill -9; shopt -u dotglob;",
                     escape_arg(targetPath)] UTF8String]);
 
   // check .fail in outPath
