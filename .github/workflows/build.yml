@@ -61,10 +61,14 @@ jobs:
 
         # copy frida headers
         cp -f frida-core.h /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/
+        cp -f frida-core.h /Library/Developer/CommandLineTools/usr/include/
         cp -f frida-gum.h /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/
+        cp -f frida-gum.h /Library/Developer/CommandLineTools/usr/include/
         # copy frida libraries
         cp -f libfrida-core.a /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/
         cp -f libfrida-gum.a /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/
+        cp -f libfrida-core.a /Library/Developer/CommandLineTools/usr/lib/
+        cp -f libfrida-gum.a /Library/Developer/CommandLineTools/usr/lib/
 
     - name: Build
       run: |
