@@ -271,10 +271,10 @@ int main(int argc, char *argv[]) {
   // remove unused files
   NSString *mobileContainerManager = [payloadPath stringByAppendingPathComponent:@".com.apple.mobile_container_manager.metadata.plist"];
   NSString *bundleMetadata = [payloadPath stringByAppendingPathComponent:@"BundleMetadata.plist"];
-  NSString *iTunesMetadata = [payloadPath stringByAppendingPathComponent:@"iTunesMetadata.plist"];
+  // NSString *iTunesMetadata = [payloadPath stringByAppendingPathComponent:@"iTunesMetadata.plist"];
   [fileManager removeItemAtPath:mobileContainerManager error:nil];
   [fileManager removeItemAtPath:bundleMetadata error:nil];
-  [fileManager removeItemAtPath:iTunesMetadata error:nil];
+  // [fileManager removeItemAtPath:iTunesMetadata error:nil];
   fprintf(stderr, "[archive] Removed unused files.\n");
 
   // remove UISupportedDevices
