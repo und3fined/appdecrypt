@@ -52,6 +52,7 @@ jobs:
 
     - name: Setup dependencies
       run: |
+        sudo apt-get install gcc-multilib -y
         clang --version
         # download https://github.com/frida/frida/releases/download/16.5.7/frida-core-devkit-16.5.7-ios-arm64.tar.xz with curl
         curl -L https://github.com/frida/frida/releases/download/16.5.7/frida-core-devkit-16.5.7-ios-arm64.tar.xz -o frida-core-devkit-16.5.7-ios-arm64.tar.xz
