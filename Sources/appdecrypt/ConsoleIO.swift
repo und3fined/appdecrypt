@@ -39,7 +39,7 @@ class ConsoleIO {
       if fileManager.fileExists(atPath: targetUrl + "/.fail") {
         let fileObj = FileHandle(forWritingAtPath: targetUrl + "/.fail")
         fileObj?.seekToEndOfFile()
-        fileObj?.write(message.data(using: .utf8)!)
+        fileObj?.write("\n\(message)".data(using: .utf8)!)
         fileObj?.closeFile()
       } else {
         fileManager.createFile(
