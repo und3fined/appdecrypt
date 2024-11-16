@@ -132,12 +132,10 @@ int main(int argc, char *argv[]) {
 
   NSString *targetIdOrName = [NSString stringWithUTF8String:argv[1]];
   NSString *targetId = nil;
-  NSString *appName = nil;
   for (NSString *appId in appMaps) {
     if ([appId isEqualToString:targetIdOrName] ||
         [appMaps[appId] isEqualToString:targetIdOrName]) {
       targetId = appId;
-      appName = appMaps[appId];
       break;
     }
   }
@@ -147,7 +145,7 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  fprintf(stderr, "[start] Target app -> %s\n", [appName UTF8String]);
+  fprintf(stderr, "[start] Target app -> %s\n", [targetId UTF8String]);
 
   /* MobileContainerManager: locate app bundle container path */
   /* `LSApplicationProxy` cannot provide correct values of container URLs since iOS 12. */
@@ -163,7 +161,7 @@ int main(int argc, char *argv[]) {
   }
 
   /* Try open */
-  fprintf(stderr, "[open] Try open %s with bundle %s\n", [appName UTF8String], [targetId UTF8String]);
+  fprintf(stderr, "[open] Try open app with bundle %s\n", [targetId UTF8String]);
   system_call_exec([[NSString stringWithFormat:@"open '%@'", escape_arg(targetId)] UTF8String]);
 
   // close the app with kill command
