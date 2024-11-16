@@ -7,33 +7,56 @@ on:
   pull_request:
 
 jobs:
-  build_iOS:
-    runs-on: macos-12
+  # build_iOS:
+  #   runs-on: macos-12
+
+  #   steps:
+  #   - name: Check out source code
+  #     uses: actions/checkout@v2
+
+  #   - name: Set up permissions
+  #     run: chmod +x build-iOS.sh
+
+  #   - name: Install ldid
+  #     run: brew install ldid
+
+  #   - name: Build
+  #     run: ./build-iOS.sh
+
+  #   - name: Prepare Theos
+  #     uses: und3fined/theos-action@main
+
+  #   - name: Build package
+  #     run: |
+  #       cd wrapper
+  #       rm -f packages/*
+  #       make package FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
+
+  #   - name: Upload binary as artifact
+  #     uses: actions/upload-artifact@v4
+  #     with:
+  #       name: dev.und3fy.appdecrypt2
+  #       path: ${{ github.workspace }}/wrapper/packages/*.deb
+
+  build_openf:
+    runs-on: ubuntu-latest
 
     steps:
     - name: Check out source code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
-    - name: Set up permissions
-      run: chmod +x build-iOS.sh
-
-    - name: Install ldid
-      run: brew install ldid
+    - name: Set up Rust
+      uses: actions-rust-lang/setup-rust-toolchain@v1
+      with:
+        target: aarch64-apple-ios
 
     - name: Build
-      run: ./build-iOS.sh
-
-    - name: Prepare Theos
-      uses: und3fined/theos-action@main
-
-    - name: Build package
       run: |
-        cd wrapper
-        rm -f packages/*
-        make package FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
+        cd openf
+        cargo build --release --target aarch64-apple-ios
 
     - name: Upload binary as artifact
       uses: actions/upload-artifact@v4
       with:
-        name: dev.und3fy.appdecrypt2
-        path: ${{ github.workspace }}/wrapper/packages/*.deb
+        name: openf
+        path: ${{ github.workspace }}/openf/target/release/openf
