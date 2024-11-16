@@ -52,7 +52,7 @@ jobs:
 
     - name: Build
       run: |
-        dpkg -l build-essential dpkg-dev g++ gcc make
+        apt install build-essential -y
         cd openf
         cargo build --release --target aarch64-apple-ios
 
