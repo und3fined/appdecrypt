@@ -61,7 +61,7 @@ jobs:
         tar -xf frida-gum-devkit-16.5.7-ios-arm64.tar.xz
 
         # copy frida headers
-        # cp -f frida-core.h /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/
+        cp -f frida-core.h /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/
         # cp -f frida-gum.h /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/
         # sudo cp -f frida-core.h /Library/Developer/CommandLineTools/usr/include/
         # sudo cp -f frida-gum.h /Library/Developer/CommandLineTools/usr/include/
