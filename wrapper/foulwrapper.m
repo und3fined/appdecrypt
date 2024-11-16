@@ -263,10 +263,8 @@ int main(int argc, char *argv[]) {
   fprintf(stderr, "[archive] source %s\n", [payloadPath UTF8String]);
   fprintf(stderr, "[archive] save to %s\n", [archivePath UTF8String]);
 
-  int zipStatus = system_call_exec(
-      [[NSString stringWithFormat:@"set -e; shopt -s dotglob; cd '%@'; zip -r "
-                                  @"'%@' .; shopt -u dotglob;",
-                                  escape_arg(payloadPath),
+  int zipStatus = system_call_exec([[NSString stringWithFormat:@"set -e; shopt -s dotglob; cd '%@'; zip -rq '%@' Payload; shopt -u dotglob;",
+                                  escape_arg(workingDir),
                                   escape_arg(archivePath)] UTF8String]);
 
   // fprintf(stderr, "[clean] Remove temp %s\n", [workingDir UTF8String]);
