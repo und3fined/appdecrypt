@@ -165,6 +165,15 @@ int main(int argc, char *argv[]) {
   fprintf(stderr, "[open] Try open app with bundle %s\n", [targetId UTF8String]);
   system_call_exec([[NSString stringWithFormat:@"open '%@'", escape_arg(targetId)] UTF8String]);
 
+
+
+  // close the app with kill command
+  fprintf(stderr, "[dump] Close the app...\n");
+  // get uuid in targetPath /private/var/containers/Bundle/Application/D271123F-AAEF-4CC7-A9E6-382DD35C2343
+  NSString *appUuid = [targetPath lastPathComponent];
+  NSString *killCmd = [NSString stringWithFormat:@"set -e; shopt -s dotglob; ps aux | grep -i 'Application/%@' | tr -s ' ' | cut -d ' ' -f 2 | xargs kill -9 &> /dev/null; shopt -u dotglob;", escape_arg(appUuid)];
+  system_call_exec([killCmd UTF8String]);
+
   /* decrypt */
   fprintf(stderr, "[dump] Start dumping...\n");
 
@@ -198,14 +207,6 @@ int main(int argc, char *argv[]) {
 
   NSString *decryptPath = [NSString stringWithFormat:@".%@", normalize_path(outPath)];
   system_call_exec([[NSString stringWithFormat:@"d3crypt '%@' '%@' -b", escape_arg(targetPath), escape_arg(decryptPath)] UTF8String]);
-
-  // close the app with kill command
-  fprintf(stderr, "[dump] Close the app... %s\n", [targetPath UTF8String]);
-
-  // get uuid in targetPath /private/var/containers/Bundle/Application/D271123F-AAEF-4CC7-A9E6-382DD35C2343
-  NSString *appUuid = [targetPath lastPathComponent];
-  NSString *killCmd = [NSString stringWithFormat:@"set -e; shopt -s dotglob; ps aux | grep -i 'Application/%@' | tr -s ' ' | cut -d ' ' -f 2 | xargs kill -9; shopt -u dotglob;", escape_arg(appUuid)];
-  system_call_exec([killCmd UTF8String]);
 
   // check .fail in outPath
   NSString *failPath = [NSString stringWithFormat:@"%@/.fail", outPath];
