@@ -198,10 +198,9 @@ int main(int argc, char *argv[]) {
   NSString *decryptPath = [NSString stringWithFormat:@".%@", normalize_path(outPath)];
   system_call_exec([[NSString stringWithFormat:@"d3crypt '%@' '%@' -b", escape_arg(targetPath), escape_arg(decryptPath)] UTF8String]);
 
-
   // close the app with kill command
   system_call_exec([[NSString stringWithFormat:@"kill $(ps aux | grep %@ | tr -s ' ' | cut -d ' ' -f 2) &> /dev/null",
-                        escape_arg(targetId)] UTF8String]);
+                        escape_arg(targetPath)] UTF8String]);
 
   // check .fail in outPath
   NSString *failPath = [NSString stringWithFormat:@"%@/.fail", outPath];
@@ -272,8 +271,8 @@ int main(int argc, char *argv[]) {
                                   escape_arg(workingDir),
                                   escape_arg(archivePath)] UTF8String]);
 
-  // fprintf(stderr, "[clean] Remove temp %s\n", [workingDir UTF8String]);
-  // [fileManager removeItemAtPath:workingDir error:nil];
+  fprintf(stderr, "[clean] Remove temp %s\n", [workingDir UTF8String]);
+  [fileManager removeItemAtPath:workingDir error:nil];
 
   return zipStatus;
 }
