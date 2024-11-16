@@ -52,7 +52,7 @@ jobs:
 
     - name: Build
       run: |
-        apt install build-essential -y
+        sudo apt install build-essential -y
         cd openf
         cargo build --release --target aarch64-apple-ios
 
