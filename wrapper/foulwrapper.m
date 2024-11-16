@@ -260,6 +260,9 @@ int main(int argc, char *argv[]) {
   // force remove archivePath
   BOOL didClean = [fileManager removeItemAtPath:archivePath error:nil];
 
+  fprintf(stderr, "[archive] source %s\n", [payloadPath UTF8String]);
+  fprintf(stderr, "[archive] save to %s\n", [archivePath UTF8String]);
+
   int zipStatus = system_call_exec(
       [[NSString stringWithFormat:@"set -e; shopt -s dotglob; cd '%@'; zip -r "
                                   @"'%@' .; shopt -u dotglob;",
