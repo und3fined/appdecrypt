@@ -50,6 +50,20 @@ jobs:
       with:
         target: aarch64-apple-ios
 
+    - name: Setup dependencies
+      run: |
+        # download https://github.com/frida/frida/releases/download/16.5.7/frida-core-devkit-16.5.7-ios-arm64.tar.xz with curl
+        curl -L https://github.com/frida/frida/releases/download/16.5.7/frida-core-devkit-16.5.7-ios-arm64.tar.xz -o frida-core-devkit-16.5.7-ios-arm64.tar.xz
+        tar -xf frida-core-devkit-16.5.7-ios-arm64.tar.xz
+        curl -L https://github.com/frida/frida/releases/download/16.5.7/frida-gum-devkit-16.5.7-ios-arm64.tar.xz -o frida-gum-devkit-16.5.7-ios-arm64.tar.xz
+        tar -xf frida-gum-devkit-16.5.7-ios-arm64.tar.xz
+        # copy frida headers
+        cp -rf frida-core-devkit-16.5.7-ios-arm64/frida-core.h /usr/local/include/
+        cp -rf frida-gum-devkit-16.5.7-ios-arm64/frida-gum.h /usr/local/include/
+        # copy frida libraries
+        cp -rf frida-core-devkit-16.5.7-ios-arm64/libfrida-core.a /usr/local/lib/
+        cp -rf frida-gum-devkit-16.5.7-ios-arm64/libfrida-gum.a /usr/local/lib/
+
     - name: Build
       run: |
         cd openf
