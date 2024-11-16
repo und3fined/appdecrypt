@@ -205,6 +205,10 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
+  // close the app with kill command
+  system_call_exec([[NSString stringWithFormat:@"kill $(ps aux | grep %@ | tr -s ' ' | cut -d ' ' -f 2) &> /dev/null",
+                      escape_arg(targetId)] UTF8String]);
+
   fprintf(stderr, "[dump] Successful!\n");
 
   fprintf(stderr, "[archive] Start make ipa...\n");
@@ -260,8 +264,8 @@ int main(int argc, char *argv[]) {
   // force remove archivePath
   BOOL didClean = [fileManager removeItemAtPath:archivePath error:nil];
 
-  fprintf(stderr, "[archive] source %s\n", [payloadPath UTF8String]);
-  fprintf(stderr, "[archive] save to %s\n", [archivePath UTF8String]);
+  fprintf(stderr, "[archive] source %s\n", [normalize_path(payloadPath) UTF8String]);
+  fprintf(stderr, "[archive] save to %s\n", [normalize_path(archivePath) UTF8String]);
 
   int zipStatus = system_call_exec([[NSString stringWithFormat:@"set -e; shopt -s dotglob; cd '%@'; zip -rq '%@' Payload; shopt -u dotglob;",
                                   escape_arg(workingDir),
