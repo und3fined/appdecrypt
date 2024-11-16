@@ -39,7 +39,7 @@ jobs:
   #       path: ${{ github.workspace }}/wrapper/packages/*.deb
 
   build_openf:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     steps:
     - name: Check out source code
