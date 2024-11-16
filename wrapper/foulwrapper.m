@@ -77,9 +77,9 @@ int system_call_exec(const char *ctx) {
       fprintf(stderr, "[exec] waitpid %d, %s (%d)\n", pid, strerror(errno), errno);
       return errno;
     }
-    if (WIFEXITED(status)) {
+    if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
       fprintf(stderr, "[exec] pid %d exited, status=%d\n", pid, WEXITSTATUS(status));
-    } else if (WIFSIGNALED(status)) {
+    } else if (WIFSIGNALED(status) && WTERMSIG(status) != 9) {
       fprintf(stderr, "[exec] pid %d killed by signal %d\n", pid, WTERMSIG(status));
     } else if (WIFSTOPPED(status)) {
       fprintf(stderr, "[exec] pid %d stopped by signal %d\n", pid, WSTOPSIG(status));
@@ -168,7 +168,6 @@ int main(int argc, char *argv[]) {
 
 
   // close the app with kill command
-  fprintf(stderr, "[dump] Close the app...\n");
   // get uuid in targetPath /private/var/containers/Bundle/Application/D271123F-AAEF-4CC7-A9E6-382DD35C2343
   NSString *appUuid = [targetPath lastPathComponent];
   NSString *killCmd = [NSString stringWithFormat:@"set -e; shopt -s dotglob; ps aux | grep -i 'Application/%@' | tr -s ' ' | cut -d ' ' -f 2 | xargs kill -9 &> /dev/null; shopt -u dotglob;", escape_arg(appUuid)];
@@ -270,12 +269,18 @@ int main(int argc, char *argv[]) {
   // force remove archivePath
   BOOL didClean = [fileManager removeItemAtPath:archivePath error:nil];
 
-  fprintf(stderr, "[archive] source %s\n", [normalize_path(payloadPath) UTF8String]);
-  fprintf(stderr, "[archive] save to %s\n", [normalize_path(archivePath) UTF8String]);
+  fprintf(stderr, "[archive] save to ./%s\n", [normalize_path(archivePath) UTF8String]);
 
   int zipStatus = system_call_exec([[NSString stringWithFormat:@"set -e; shopt -s dotglob; cd '%@'; zip -rq '%@' Payload; shopt -u dotglob;",
                                   escape_arg(workingDir),
                                   escape_arg(archivePath)] UTF8String]);
+
+  if (zipStatus != 0) {
+    fprintf(stderr, "[archive] Failed to archive ipa!\n");
+    return 1;
+  }
+
+  fprintf(stderr, "[archive] Successful!\n");
 
   fprintf(stderr, "[clean] Remove temp %s\n", [workingDir UTF8String]);
   [fileManager removeItemAtPath:workingDir error:nil];
