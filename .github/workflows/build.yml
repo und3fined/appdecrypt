@@ -59,11 +59,11 @@ jobs:
         curl -L https://github.com/frida/frida/releases/download/16.5.7/frida-gum-devkit-16.5.7-ios-arm64.tar.xz -o frida-gum-devkit-16.5.7-ios-arm64.tar.xz
         tar -xf frida-gum-devkit-16.5.7-ios-arm64.tar.xz
         # copy frida headers
-        cp -rf frida-core-devkit-16.5.7-ios-arm64/frida-core.h /usr/local/include/
-        cp -rf frida-gum-devkit-16.5.7-ios-arm64/frida-gum.h /usr/local/include/
+        cp -rf frida-core-devkit-16.5.7-ios-arm64/frida-core.h /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/
+        cp -rf frida-gum-devkit-16.5.7-ios-arm64/frida-gum.h /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/
         # copy frida libraries
-        cp -rf frida-core-devkit-16.5.7-ios-arm64/libfrida-core.a /usr/local/lib/
-        cp -rf frida-gum-devkit-16.5.7-ios-arm64/libfrida-gum.a /usr/local/lib/
+        cp -rf frida-core-devkit-16.5.7-ios-arm64/libfrida-core.a /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/
+        cp -rf frida-gum-devkit-16.5.7-ios-arm64/libfrida-gum.a /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/
 
     - name: Build
       run: |
