@@ -36,14 +36,17 @@ class ConsoleIO {
     case .standard:
       print("[appdecrypt] \(self.normalizedPath(sourceUrl, message))")
     case .error:
+      let nextMessage = self.normalizedPath(sourceUrl, message)
+
       if fileManager.fileExists(atPath: targetUrl + "/.fail") {
         let fileObj = FileHandle(forWritingAtPath: targetUrl + "/.fail")
         fileObj?.seekToEndOfFile()
-        fileObj?.write("\n\(message)".data(using: .utf8)!)
+        fileObj?.write("\n\(nextMessage)".data(using: .utf8)!)
         fileObj?.closeFile()
       } else {
+        let failContent = "Target: \(targetUrl)\n\(nextMessage)"
         fileManager.createFile(
-          atPath: targetUrl + "/.fail", contents: message.data(using: .utf8), attributes: nil)
+          atPath: targetUrl + "/.fail", contents: failContent.data(using: .utf8), attributes: nil)
       }
 
       fputs("[appdecrypt] Error: \(self.normalizedPath(sourceUrl, message))\n", stderr)

@@ -1,4 +1,5 @@
 
+#include <cstdio>
 #import <stdio.h>
 #import <spawn.h>
 #import <objc/runtime.h>
@@ -202,6 +203,7 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
+  fprintf(stderr, "[dump] Target @ -> %s\n", [targetPath UTF8String]);
   fprintf(stderr, "[dump] Dumping to .%s\n", [normalize_path(outPath) UTF8String]);
 
   NSString *decryptPath = [NSString stringWithFormat:@".%@", normalize_path(outPath)];
