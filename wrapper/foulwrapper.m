@@ -315,5 +315,6 @@ int main(int argc, char *argv[]) {
 
   fprintf(stderr, "[dump] Done!\n");
   fprintf(stdout, "%s\n", [archiveName UTF8String]);
+  fflush(stdout);
   return 0;
 }
