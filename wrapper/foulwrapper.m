@@ -125,17 +125,19 @@ int main(int argc, char *argv[]) {
   for (LSApplicationProxy *appProxy in [workspace allApplications]) {
     NSString *appId = [appProxy applicationIdentifier];
     NSString *appName = [appProxy localizedName];
-    if (appId && appName) {
+    if (appId && appName)
       appMaps[appId] = appName;
     }
   }
 
   NSString *targetIdOrName = [NSString stringWithUTF8String:argv[1]];
   NSString *targetId = nil;
+  NSString *appName = nil;
   for (NSString *appId in appMaps) {
     if ([appId isEqualToString:targetIdOrName] ||
         [appMaps[appId] isEqualToString:targetIdOrName]) {
       targetId = appId;
+      appName = appMaps[appId];
       break;
     }
   }
@@ -145,7 +147,7 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  fprintf(stderr, "[start] Target app -> %s\n", [targetId UTF8String]);
+  fprintf(stderr, "[start] Target app -> %s\n", [appName UTF8String]);
 
   /* MobileContainerManager: locate app bundle container path */
   /* `LSApplicationProxy` cannot provide correct values of container URLs since iOS 12. */
@@ -161,10 +163,8 @@ int main(int argc, char *argv[]) {
   }
 
   /* Try open */
-  fprintf(stderr, "[open] Try open app with bundle %s\n", [targetId UTF8String]);
+  fprintf(stderr, "[open] Try open %s with bundle %s\n", [appName UTF8String], [targetId UTF8String]);
   system_call_exec([[NSString stringWithFormat:@"open '%@'", escape_arg(targetId)] UTF8String]);
-
-
 
   // close the app with kill command
   // get uuid in targetPath /private/var/containers/Bundle/Application/D271123F-AAEF-4CC7-A9E6-382DD35C2343
@@ -268,15 +268,6 @@ int main(int argc, char *argv[]) {
     [fileManager copyItemAtPath:dumpedFilePath toPath:payloadFilePath error:nil];
   }
 
-  // remove unused files
-  NSString *mobileContainerManager = [payloadPath stringByAppendingPathComponent:@".com.apple.mobile_container_manager.metadata.plist"];
-  NSString *bundleMetadata = [payloadPath stringByAppendingPathComponent:@"BundleMetadata.plist"];
-  // NSString *iTunesMetadata = [payloadPath stringByAppendingPathComponent:@"iTunesMetadata.plist"];
-  [fileManager removeItemAtPath:mobileContainerManager error:nil];
-  [fileManager removeItemAtPath:bundleMetadata error:nil];
-  // [fileManager removeItemAtPath:iTunesMetadata error:nil];
-  fprintf(stderr, "[archive] Removed unused files.\n");
-
   // remove UISupportedDevices
   NSArray *payloadContents = [fileManager contentsOfDirectoryAtPath:payloadPath error:nil];
   for (NSString *file in payloadContents) {
@@ -286,10 +277,23 @@ int main(int argc, char *argv[]) {
       [infoPlist removeObjectForKey:@"UISupportedDevices"];
       [infoPlist writeToFile:infoPlistPath atomically:YES];
 
+      // change CFBundleDisplayName
+      [infoPlist setObject:[appProxy localizedName] forKey:@"CFBundleDisplayName"];
+
       NSString *signPath = [payloadPath stringByAppendingPathComponent:[file stringByAppendingPathComponent:@"decrypt.day"]];
       [fileManager createFileAtPath:signPath contents:[@"und3fined" dataUsingEncoding:NSUTF8StringEncoding] attributes:nil];
     }
   }
+
+
+  // remove unused files
+    NSString *mobileContainerManager = [payloadPath stringByAppendingPathComponent:@".com.apple.mobile_container_manager.metadata.plist"];
+    NSString *bundleMetadata = [payloadPath stringByAppendingPathComponent:@"BundleMetadata.plist"];
+    NSString *iTunesMetadata = [payloadPath stringByAppendingPathComponent:@"iTunesMetadata.plist"];
+    [fileManager removeItemAtPath:mobileContainerManager error:nil];
+    [fileManager removeItemAtPath:bundleMetadata error:nil];
+    [fileManager removeItemAtPath:iTunesMetadata error:nil];
+    fprintf(stderr, "[archive] Removed unused files.\n");
 
   // /* zip: archive */
   fprintf(stderr, "[archive] Create archive ipa...\n");
