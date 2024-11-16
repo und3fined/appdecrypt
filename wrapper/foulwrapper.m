@@ -202,7 +202,7 @@ int main(int argc, char *argv[]) {
   // close the app with kill command
   fprintf(stderr, "[dump] Close the app... %s\n", [targetPath UTF8String]);
 
-  NSString *killCmd = [NSString stringWithFormat:@"ps aux | grep -i '%@' | tr -s ' ' | cut -d ' ' -f 2 | xargs kill -9", escape_arg(targetPath)];
+  NSString *killCmd = [NSString stringWithFormat:@"ps aux | grep -i '%@' | tr -s ' '", escape_arg(targetPath)];
   system_call_exec([killCmd UTF8String]);
 
   // check .fail in outPath
