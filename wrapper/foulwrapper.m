@@ -214,7 +214,7 @@ int main(int argc, char *argv[]) {
 
     // print error in .fail
     NSString *failContent = [NSString stringWithContentsOfFile:failPath encoding:NSUTF8StringEncoding error:nil];
-    fprintf(stderr, "%s\n\n", [failContent UTF8String]);
+    fprintf(stderr, "===========\n%s\n============\n", [failContent UTF8String]);
 
     fprintf(stderr, "[clean] Remove temp %s\n", [workingDir UTF8String]);
     [fileManager removeItemAtPath:workingDir error:nil];
