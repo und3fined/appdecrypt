@@ -1,3 +1,4 @@
+
 #import <stdio.h>
 #import <spawn.h>
 #import <objc/runtime.h>
@@ -199,8 +200,10 @@ int main(int argc, char *argv[]) {
   system_call_exec([[NSString stringWithFormat:@"d3crypt '%@' '%@' -b", escape_arg(targetPath), escape_arg(decryptPath)] UTF8String]);
 
   // close the app with kill command
-  system_call_exec([[NSString stringWithFormat:@"kill $(ps aux | grep %@ | tr -s ' ' | cut -d ' ' -f 2) &> /dev/null",
-                        escape_arg(targetPath)] UTF8String]);
+  fprintf(stderr, "[dump] Close the app... %s\n", [targetPath UTF8String]);
+  system_call_exec([
+                  [NSString stringWithFormat:@"set -e; shopt -s dotglob; kill $(ps aux | grep '%@' | tr -s ' ' | cut -d ' ' -f 2); shopt -u dotglob;",
+                    escape_arg(targetPath)] UTF8String]);
 
   // check .fail in outPath
   NSString *failPath = [NSString stringWithFormat:@"%@/.fail", outPath];
