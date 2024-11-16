@@ -198,16 +198,17 @@ int main(int argc, char *argv[]) {
   NSString *decryptPath = [NSString stringWithFormat:@".%@", normalize_path(outPath)];
   system_call_exec([[NSString stringWithFormat:@"d3crypt '%@' '%@' -b", escape_arg(targetPath), escape_arg(decryptPath)] UTF8String]);
 
+
+  // close the app with kill command
+  system_call_exec([[NSString stringWithFormat:@"kill $(ps aux | grep %@ | tr -s ' ' | cut -d ' ' -f 2) &> /dev/null",
+                        escape_arg(targetId)] UTF8String]);
+
   // check .fail in outPath
   NSString *failPath = [NSString stringWithFormat:@"%@/.fail", outPath];
   if ([fileManager fileExistsAtPath:failPath]) {
     fprintf(stderr, "[dump] Failed to dump!\n");
     return 1;
   }
-
-  // close the app with kill command
-  system_call_exec([[NSString stringWithFormat:@"kill $(ps aux | grep %@ | tr -s ' ' | cut -d ' ' -f 2) &> /dev/null",
-                      escape_arg(targetId)] UTF8String]);
 
   fprintf(stderr, "[dump] Successful!\n");
 
