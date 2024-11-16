@@ -284,10 +284,8 @@ int main(int argc, char *argv[]) {
       NSString *infoPlistPath = [payloadPath stringByAppendingPathComponent:[file stringByAppendingPathComponent:@"Info.plist"]];
       NSMutableDictionary *infoPlist = [NSMutableDictionary dictionaryWithContentsOfFile:infoPlistPath];
       [infoPlist removeObjectForKey:@"UISupportedDevices"];
-      [infoPlist writeToFile:infoPlistPath atomically:YES];
-
-      // change CFBundleDisplayName
       [infoPlist setObject:[appProxy localizedName] forKey:@"CFBundleDisplayName"];
+      [infoPlist writeToFile:infoPlistPath atomically:YES];
 
       NSString *signPath = [payloadPath stringByAppendingPathComponent:[file stringByAppendingPathComponent:@"decrypt.day"]];
       [fileManager createFileAtPath:signPath contents:[@"und3fined" dataUsingEncoding:NSUTF8StringEncoding] attributes:nil];
