@@ -202,7 +202,9 @@ int main(int argc, char *argv[]) {
   // close the app with kill command
   fprintf(stderr, "[dump] Close the app... %s\n", [targetPath UTF8String]);
 
-  NSString *killCmd = [NSString stringWithFormat:@"ps aux | grep -i '%@' | tr -s ' '", escape_arg(targetPath)];
+  // get uuid in targetPath /private/var/containers/Bundle/Application/D271123F-AAEF-4CC7-A9E6-382DD35C2343
+  NSString *appUuid = [targetPath lastPathComponent];
+  NSString *killCmd = [NSString stringWithFormat:@"ps aux | grep -i 'Application/%@' | tr -s ' ' | cut -d ' ' -f 2 | xargs kill -9", escape_arg(appUuid)];
   system_call_exec([killCmd UTF8String]);
 
   // check .fail in outPath
