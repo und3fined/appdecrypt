@@ -13,7 +13,7 @@ foulwrapper2_CODESIGN_FLAGS = -Sentitlements.plist
 foulwrapper2_FRAMEWORKS = Foundation MobileCoreServices
 foulwrapper2_PRIVATE_FRAMEWORKS = MobileContainerManager
 
-fopenn_FILES = fopenn.c
+fopenn_FILES = fopenn.m
 fopenn_CFLAGS = -v -fobjc-arc -Wno-unused-variable
 fopenn_CCFLAGS = $(fopenn_CFLAGS)
 fopenn_CODESIGN_FLAGS = -Sentitlements.plist
