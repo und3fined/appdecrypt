@@ -197,7 +197,20 @@ int main(int argc, char *argv[]) {
       num == MH_CIGAM_64 ||
       num == FAT_CIGAM ||
       num == FAT_CIGAM_64) {
-      system_call_exec([[NSString stringWithFormat:@"fopenn '%@'", escape_arg(fullPath)] UTF8String]);
+
+      bool needOpen = false;
+      // if fullPath include .apex and .app is needOpen = true;
+      if ([fullPath rangeOfString:@".app"].location != NSNotFound &&
+          [fullPath rangeOfString:@".apex"].location != NSNotFound) {
+        needOpen = true;
+      } else if ([fullPath rangeOfString:@".app"].location != NSNotFound &&
+                 [fullPath rangeOfString:@".framework"].location == NSNotFound) {
+        needOpen = true;
+      }
+
+      if (needOpen) {
+        system_call_exec([[NSString stringWithFormat:@"fopenn %@", escape_arg(fullPath)] UTF8String]);
+      }
     }
 
     fclose(fp);
