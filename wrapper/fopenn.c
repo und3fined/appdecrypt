@@ -75,40 +75,6 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-static void on_detached(FridaSession *session, FridaSessionDetachReason reason,
-                        FridaCrash *crash, gpointer user_data) {
-  gchar *reason_str;
-
-  reason_str = g_enum_to_string(FRIDA_TYPE_SESSION_DETACH_REASON, reason);
-  g_print("on_detached: reason=%s crash=%p\n", reason_str, crash);
-  g_free(reason_str);
-
-  g_idle_add(stop, NULL);
-}
-
-static void on_message(FridaScript *script, const gchar *message, GBytes *data,
-                       gpointer user_data) {
-  JsonParser *parser;
-  JsonObject *root;
-  const gchar *type;
-
-  parser = json_parser_new();
-  json_parser_load_from_data(parser, message, -1, NULL);
-  root = json_node_get_object(json_parser_get_root(parser));
-
-  type = json_object_get_string_member(root, "type");
-  if (strcmp(type, "log") == 0) {
-    const gchar *log_message;
-
-    log_message = json_object_get_string_member(root, "payload");
-    g_print("%s\n", log_message);
-  } else {
-    g_print("on_message: %s\n", message);
-  }
-
-  g_object_unref(parser);
-}
-
 static void on_signal(int signo) { g_idle_add(stop, NULL); }
 
 static gboolean stop(gpointer user_data) {
