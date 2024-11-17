@@ -125,7 +125,7 @@ int main(int argc, char *argv[]) {
   if (argc < 2) {
     fprintf(stderr, "usage: foulwrapper2 (application name or application "
                     "bundle identifier)\n");
-    return 1;
+    exit(1);
   }
 
   /* Use APIs in `LSApplicationWorkspace`. */
@@ -151,7 +151,7 @@ int main(int argc, char *argv[]) {
 
   if (!targetId) {
     fprintf(stderr, "application \"%s\" not found\n", argv[1]);
-    return 1;
+    exit(1);
   }
 
   fprintf(stderr, "[start] Target app -> %s\n", [targetId UTF8String]);
@@ -166,7 +166,7 @@ int main(int argc, char *argv[]) {
   NSString *targetPath = [[container url] path];
   if (!targetPath) {
     fprintf(stderr, "Application \"%s\" does not have a bundle container: %s\n", argv[1], [[error localizedDescription] UTF8String]);
-    return 1;
+    exit(1);
   }
 
   /* decrypt */
@@ -218,13 +218,13 @@ int main(int argc, char *argv[]) {
     fprintf(stderr, "[dump] Dump directory already exists. AUTO CLEANUP!\n");
     if ([fileManager removeItemAtPath:outPath error:&error]) {} else {
       fprintf(stderr, "[dump] Failed to remove directory: %s\n", [normalize_path(outPath) UTF8String]);
-      return 1;
+      exit(1);
     }
   }
 
   if ([fileManager createDirectoryAtPath:outPath withIntermediateDirectories:YES attributes:nil error:&error]) {} else {
     fprintf(stderr, "[dump] Failed to create directory: %s\n", [normalize_path(outPath) UTF8String]);
-    return 1;
+    exit(1);
   }
 
   fprintf(stderr, "[dump] Target @ -> %s\n", [targetPath UTF8String]);
@@ -244,7 +244,7 @@ int main(int argc, char *argv[]) {
 
     fprintf(stderr, "[clean] Remove temp %s\n", [workingDir UTF8String]);
     [fileManager removeItemAtPath:workingDir error:nil];
-    return 1;
+    exit(1);
   }
 
   fprintf(stderr, "[dump] Successful!\n");
@@ -258,7 +258,7 @@ int main(int argc, char *argv[]) {
     fprintf(stderr, "[archive] Payload directory already exists. AUTO CLEANUP!\n");
     if ([fileManager removeItemAtPath:payloadPath error:&error]) {} else {
       fprintf(stderr, "[archive] Failed to remove directory: %s\n", [normalize_path(payloadPath) UTF8String]);
-      return 1;
+      exit(1);
     }
   }
 
@@ -266,7 +266,7 @@ int main(int argc, char *argv[]) {
   BOOL didCopy = [fileManager copyItemAtPath:targetPath toPath:payloadPath error:&error];
   if (!didCopy) {
     fprintf(stderr, "[archive] Failed to copy Payload: %s\n", [normalize_path(payloadPath) UTF8String]);
-    return 1;
+    exit(1);
   }
 
   // override content from decryptPath to payloadPath
@@ -333,7 +333,7 @@ int main(int argc, char *argv[]) {
 
   if (zipStatus != 0) {
     fprintf(stderr, "[archive] Failed to archive ipa!\n");
-    return 1;
+    exit(1);
   }
 
   fprintf(stderr, "[dump] Remove temp %s\n", [workingDir UTF8String]);
@@ -342,5 +342,5 @@ int main(int argc, char *argv[]) {
   fprintf(stderr, "[dump] Done!\n");
   fprintf(stdout, "%s\n", [archiveName UTF8String]);
   fflush(stdout);
-  return 0;
+  exit(0);
 }
