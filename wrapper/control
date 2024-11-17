@@ -1,6 +1,6 @@
 Package: dev.und3fy.appdecrypt2
 Name: appdecrypt2
-Version: 0.1.3
+Version: 0.1.4
 Architecture: iphoneos-arm64
 Depends: zip
 Description: Directly decrypt binaries like flexdecrypt, but also supports iOS 16+
