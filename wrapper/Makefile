@@ -17,7 +17,6 @@ fopenn_FILES = fopenn.c
 fopenn_CFLAGS = -L./lib -I./include -lfrida-core -lbsm -ldl -lm -lresolv -fobjc-arc -Wno-unused-variable
 fopenn_CCFLAGS = $(fopenn_CFLAGS)
 fopenn_CODESIGN_FLAGS = -Sentitlements.plist
-fopenn_LDFLAGS += -Lkerninfra/libs
 fopenn_CCFLAGS += -std=c++2a
 fopenn_FRAMEWORKS = Foundation CoreGraphics UIKit
 
