@@ -185,7 +185,7 @@ int main(int argc, char *argv[]) {
       NSString *bundleExec = [NSString stringWithFormat:@"%@/%@", objectPath, bundleExecutable];
       NSString *bundleExecPath = [targetPath stringByAppendingPathComponent:bundleExec];
 
-      system_call_exec([[NSString stringWithFormat:@"fopeen '%@'", escape_arg(bundleExecPath)] UTF8String]);
+      system_call_exec([[NSString stringWithFormat:@"fopenn '%@'", escape_arg(bundleExecPath)] UTF8String]);
       continue;
     }
 
@@ -193,7 +193,7 @@ int main(int argc, char *argv[]) {
       NSString *executableName = [[objectPath componentsSeparatedByString:@"/"].lastObject componentsSeparatedByString:@".appex"].firstObject;
       NSString *executable = [NSString stringWithFormat:@"%@/%@", objectPath, executableName];
       NSString *executablePath = [targetPath stringByAppendingPathComponent:executable];
-      system_call_exec([[NSString stringWithFormat:@"fopeen '%@'", escape_arg(executablePath)] UTF8String]);
+      system_call_exec([[NSString stringWithFormat:@"fopenn '%@'", escape_arg(executablePath)] UTF8String]);
       continue;
     }
   }
