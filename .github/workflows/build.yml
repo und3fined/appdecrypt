@@ -8,7 +8,7 @@ on:
 
 jobs:
   build_iOS:
-    runs-on: macos-12
+    runs-on: macos-14
 
     steps:
     - name: Check out source code
