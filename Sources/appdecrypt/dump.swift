@@ -162,23 +162,7 @@ class Dump {
 
     for (i, sourcePath) in needDumpFilePaths.enumerated() {
       let targetPath = dumpedFilePaths[i]
-
-      var needSpawn = false
-      if sourcePath.contains(".app") && sourcePath.contains(".appex") {
-        needSpawn = true
-      } else if sourcePath.contains(".app") && !sourcePath.contains(".framework") {
-        needSpawn = true
-      }
-
-      if needSpawn {
-        let task = Process()
-        task.launchPath = "/var/jb/usr/local/bin/fopenn"
-        task.arguments = [sourcePath]
-        task.launch()
-        task.waitUntilExit()
-      }
       // dlopen is used to load the dylib into the current process
-
       // Please see https://github.com/NyaMisty/fouldecrypt/issues/15#issuecomment-1722561492
       let handle = dlopen(sourcePath, RTLD_LAZY | RTLD_GLOBAL)
       Dump.mapFile(path: sourcePath, mutable: false) {

@@ -10,11 +10,20 @@
 
 static int VERBOSE = 0;
 
-#define MH_MAGIC_64 0xfeedfacf /* the 64-bit mach magic number */
-#define MH_CIGAM_64 0xcffaedfe /* NXSwapInt(MH_MAGIC_64) */
+#define MH_MAGIC      0xfeedface
+#define MH_CIGAM      0xcefaedfe
+#define MH_MAGIC_64   0xfeedfacf  /* the 64-bit mach magic number */
+#define MH_CIGAM_64   0xcffaedfe  /* NXSwapInt(MH_MAGIC_64) */
 
-#define FAT_MAGIC_64 0xcafebabf
-#define FAT_CIGAM_64 0xbfbafeca /* NXSwapLong(FAT_MAGIC_64) */
+#define FAT_MAGIC     0xcafebabe
+#define FAT_CIGAM     0xbebafeca
+#define FAT_MAGIC_64  0xcafebabf
+#define FAT_CIGAM_64  0xbfbafeca  /* NXSwapLong(FAT_MAGIC_64) */
+
+#define LC_SEGMENT              0x1
+#define LC_SEGMENT_64           0x19
+#define LC_ENCRYPTION_INFO      0x21
+#define LC_ENCRYPTION_INFO_64   0x2C
 
 extern char **environ;
 
@@ -160,8 +169,39 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
+
   /* Try open */
-  // fprintf(stderr, "[open] Try open app with bundle %s\n", [targetId UTF8String]);
+  fprintf(stderr, "[dump] Prepair dump for %s\n", [targetId UTF8String]);
+
+  NSEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:targetPath];
+  NSString *objectPath = nil;
+  while (objectPath = [enumerator nextObject]) {
+    NSString *fullPath = [targetPath stringByAppendingPathComponent:objectPath];
+    FILE *fp = fopen([fullPath UTF8String], "rb");
+    if (fp) {
+      perror("fopen");
+      continue;
+    }
+
+    int num = getw(fp);
+    if (num == EOF) {
+      fclose(fp);
+      continue;
+    }
+
+    if (num == MH_MAGIC_64 ||
+      num == MH_MAGIC ||
+      num == FAT_MAGIC_64 ||
+      num == FAT_MAGIC ||
+      num == MH_CIGAM ||
+      num == MH_CIGAM_64 ||
+      num == FAT_CIGAM ||
+      num == FAT_CIGAM_64) {
+      system_call_exec([[NSString stringWithFormat:@"fopenn '%@'", escape_arg(fullPath)] UTF8String]);
+    }
+
+    fclose(fp);
+  }
   // system_call_exec([[NSString stringWithFormat:@"fopenn '%@'", escape_arg(targetId)] UTF8String]);
 
   // close the app with kill command
@@ -246,7 +286,6 @@ int main(int argc, char *argv[]) {
   NSEnumerator *dumpedFiles = [[NSFileManager defaultManager] enumeratorAtPath:outPath];
   NSString *dumpedFile = nil;
   while (dumpedFile = [dumpedFiles nextObject]) {
-
     NSString *dumpedFilePath = [outPath stringByAppendingPathComponent:dumpedFile];
     // check if dumpedFile is a directory
     BOOL isDir = true;
