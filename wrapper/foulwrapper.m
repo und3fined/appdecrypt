@@ -200,7 +200,7 @@ int main(int argc, char *argv[]) {
       NSString *frameworkName = [[objectPath componentsSeparatedByString:@"/"].lastObject componentsSeparatedByString:@".framework"].firstObject;
       NSString *framework = [NSString stringWithFormat:@"%@/%@", objectPath, frameworkName];
       NSString *frameworkPath = [targetPath stringByAppendingPathComponent:framework];
-      system_call_exec([[NSString stringWithFormat:@"fopenn '%@'", escape_arg(frameworkPath)] UTF8String]);
+      system_call_exec([[NSString stringWithFormat:@"dlopenn '%@'", escape_arg(frameworkPath)] UTF8String]);
       continue;
     }
   }

@@ -4,7 +4,7 @@ export ADDITIONAL_CFLAGS = -DTHEOS_LEAN_AND_MEAN -fobjc-arc
 
 include $(THEOS)/makefiles/common.mk
 
-TOOL_NAME = foulwrapper2 fopenn
+TOOL_NAME = foulwrapper2 fopenn dlopenn
 
 foulwrapper2_FILES = foulwrapper.m
 foulwrapper2_CFLAGS = -fobjc-arc -Wno-unused-variable -Iinclude
@@ -18,6 +18,10 @@ fopenn_CFLAGS = -v -fobjc-arc -Wno-unused-variable
 fopenn_CCFLAGS = $(fopenn_CFLAGS)
 fopenn_CODESIGN_FLAGS = -Sentitlements.plist
 fopenn_FRAMEWORKS = Foundation CoreGraphics UIKit
+
+
+dlopenn_FILES = dlopenn.m
+#dlopenn_INSTALL_PATH = /usr/bin
 
 include $(THEOS_MAKE_PATH)/tool.mk
 
