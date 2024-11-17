@@ -196,13 +196,13 @@ int main(int argc, char *argv[]) {
       continue;
     }
 
-    if ([objectPath hasSuffix:@".framework"]) {
-      NSString *frameworkName = [[objectPath componentsSeparatedByString:@"/"].lastObject componentsSeparatedByString:@".framework"].firstObject;
-      NSString *framework = [NSString stringWithFormat:@"%@/%@", objectPath, frameworkName];
-      NSString *frameworkPath = [targetPath stringByAppendingPathComponent:framework];
-      system_call_exec([[NSString stringWithFormat:@"dlopenn '%@'", escape_arg(frameworkPath)] UTF8String]);
-      continue;
-    }
+    // if ([objectPath hasSuffix:@".framework"]) {
+    //   NSString *frameworkName = [[objectPath componentsSeparatedByString:@"/"].lastObject componentsSeparatedByString:@".framework"].firstObject;
+    //   NSString *framework = [NSString stringWithFormat:@"%@/%@", objectPath, frameworkName];
+    //   NSString *frameworkPath = [targetPath stringByAppendingPathComponent:framework];
+    //   system_call_exec([[NSString stringWithFormat:@"dlopenn '%@'", escape_arg(frameworkPath)] UTF8String]);
+    //   continue;
+    // }
   }
 
   fprintf(stderr, "[dump] Start dumping...\n");
