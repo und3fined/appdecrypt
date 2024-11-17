@@ -1,11 +1,6 @@
 /*
- * Compile with:
- *
- * clang  fopenn.c -o frida-core-example -L. -lfrida-core -lbsm -ldl
- * -lm -lresolv
- * -Wl,-framework,Foundation,-framework,CoreGraphics,-framework,UIKit
- *
- * Visit https://frida.re to learn more about Frida.
+ * fopenn.m
+ * This program demonstrates how to spawn a new process using posix_spawn.
  */
 #include <stdio.h>
 #include <stdlib.h>

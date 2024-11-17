@@ -161,16 +161,14 @@ int main(int argc, char *argv[]) {
   }
 
   /* Try open */
-  fprintf(stderr, "[open] Try open app with bundle %s\n", [targetId UTF8String]);
-  system_call_exec([[NSString stringWithFormat:@"open '%@'", escape_arg(targetId)] UTF8String]);
-
-
+  // fprintf(stderr, "[open] Try open app with bundle %s\n", [targetId UTF8String]);
+  // system_call_exec([[NSString stringWithFormat:@"fopenn '%@'", escape_arg(targetId)] UTF8String]);
 
   // close the app with kill command
   // get uuid in targetPath /private/var/containers/Bundle/Application/D271123F-AAEF-4CC7-A9E6-382DD35C2343
-  NSString *appUuid = [targetPath lastPathComponent];
-  NSString *killCmd = [NSString stringWithFormat:@"set -e; shopt -s dotglob; ps aux | grep -i 'Application/%@' | tr -s ' ' | cut -d ' ' -f 2 | xargs kill -9 &> /dev/null; shopt -u dotglob;", escape_arg(appUuid)];
-  system_call_exec([killCmd UTF8String]);
+  // NSString *appUuid = [targetPath lastPathComponent];
+  // NSString *killCmd = [NSString stringWithFormat:@"set -e; shopt -s dotglob; ps aux | grep -i 'Application/%@' | tr -s ' ' | cut -d ' ' -f 2 | xargs kill -9 &> /dev/null; shopt -u dotglob;", escape_arg(appUuid)];
+  // system_call_exec([killCmd UTF8String]);
 
   /* decrypt */
   fprintf(stderr, "[dump] Start dumping...\n");
