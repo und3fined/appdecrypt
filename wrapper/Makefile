@@ -14,7 +14,7 @@ foulwrapper2_FRAMEWORKS = Foundation MobileCoreServices
 foulwrapper2_PRIVATE_FRAMEWORKS = MobileContainerManager
 
 fopenn_FILES = fopenn.c
-fopenn_CFLAGS = -v -I/opt/homebrew/include/glib-2.0 -L/opt/homebrew/lib -lfrida-core -lglib-2.0 -lgobject-2.0 -lbsm -ldl -lm -lresolv -Wl,-framework,Foundation,-framework,CoreGraphics,-framework,UIKit
+fopenn_CFLAGS = -v -fobjc-arc -Wno-unused-variable
 fopenn_CCFLAGS = $(fopenn_CFLAGS)
 fopenn_CODESIGN_FLAGS = -Sentitlements.plist
 fopenn_FRAMEWORKS = Foundation CoreGraphics UIKit

@@ -17,20 +17,20 @@ jobs:
     - name: Prepare Theos
       uses: und3fined/theos-action@main
 
-    - name: Setup deps
-      env:
-        FRIDA_VERSION: 16.5.6
-      run: |
-        curl -L https://github.com/frida/frida/releases/download/$FRIDA_VERSION/frida-core-devkit-$FRIDA_VERSION-ios-arm64.tar.xz -o frida-core-devkit-ios-arm64.tar.xz
-        tar -xf frida-core-devkit-ios-arm64.tar.xz
+    # - name: Setup deps
+    #   env:
+    #     FRIDA_VERSION: 16.5.6
+    #   run: |
+    #     curl -L https://github.com/frida/frida/releases/download/$FRIDA_VERSION/frida-core-devkit-$FRIDA_VERSION-ios-arm64.tar.xz -o frida-core-devkit-ios-arm64.tar.xz
+    #     tar -xf frida-core-devkit-ios-arm64.tar.xz
 
-        mkdir -p theos/include/iphone
+    #     mkdir -p theos/include/iphone
 
-        cp -f frida-core.h theos/include/
-        cp -f frida-core.h theos/include/iphone/
-        cp -f frida-core.h theos/lib/iphone/rootless
-        cp -f libfrida-core.a theos/lib/iphone/rootless/
-        cp -f libfrida-core.a ./wrapper/
+    #     cp -f frida-core.h theos/include/
+    #     cp -f frida-core.h theos/include/iphone/
+    #     cp -f frida-core.h theos/lib/iphone/rootless
+    #     cp -f libfrida-core.a theos/lib/iphone/rootless/
+    #     cp -f libfrida-core.a ./wrapper/
 
     - name: Build appdecrypt2
       run: |
