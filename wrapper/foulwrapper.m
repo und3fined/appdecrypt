@@ -201,7 +201,7 @@ int main(int argc, char *argv[]) {
       bool needOpen = false;
       // if fullPath include .apex and .app is needOpen = true;
       if ([fullPath rangeOfString:@".app"].location != NSNotFound &&
-          [fullPath rangeOfString:@".apex"].location != NSNotFound) {
+          [fullPath rangeOfString:@".appex"].location != NSNotFound) {
         needOpen = true;
       } else if ([fullPath rangeOfString:@".app"].location != NSNotFound &&
                  [fullPath rangeOfString:@".framework"].location == NSNotFound) {
