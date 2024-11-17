@@ -20,13 +20,13 @@ jobs:
     - name: Install ldid
       run: brew install ldid
 
-    - name: Build
+    - name: Build appdecrypt2
       run: ./build-iOS.sh
 
     - name: Prepare Theos
       uses: und3fined/theos-action@main
 
-    - name: Build package
+    - name: Build wrapper and package
       run: |
         cd wrapper
         rm -f packages/*
