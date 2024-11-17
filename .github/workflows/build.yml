@@ -14,17 +14,13 @@ jobs:
     - name: Check out source code
       uses: actions/checkout@v2
 
-    - name: Set up permissions
-      run: chmod +x build-iOS.sh
-
-    - name: Install ldid
-      run: brew install ldid
-
-    - name: Build appdecrypt2
-      run: ./build-iOS.sh
-
     - name: Prepare Theos
       uses: und3fined/theos-action@main
+
+    - name: Build appdecrypt2
+      run: |
+        chmod +x build-iOS.sh
+        ./build-iOS.sh
 
     - name: Build wrapper and package
       run: |
