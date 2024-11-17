@@ -169,68 +169,36 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-
-  /* Try open */
-  fprintf(stderr, "[dump] Prepair dump for %s\n", [targetId UTF8String]);
-
-  NSEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:targetPath];
-  NSString *objectPath = nil;
-  while (objectPath = [enumerator nextObject]) {
-    NSString *objectFullPath = [targetPath stringByAppendingPathComponent:objectPath];
-    FILE *fp = fopen(objectFullPath.UTF8String, "rb");
-    if (fp) {
-      perror("fopen");
-      continue;
-    }
-
-    int num = getw(fp);
-    if (num == EOF) {
-      fclose(fp);
-      continue;
-    }
-
-    if (num == MH_MAGIC_64 ||
-      num == MH_MAGIC ||
-      num == FAT_MAGIC_64 ||
-      num == FAT_MAGIC ||
-      num == MH_CIGAM ||
-      num == MH_CIGAM_64 ||
-      num == FAT_CIGAM ||
-      num == FAT_CIGAM_64) {
-
-      bool needOpen = false;
-      // if fullPath include .apex and .app is needOpen = true;
-      if ([objectPath rangeOfString:@".app"].location != NSNotFound &&
-          [objectPath rangeOfString:@".appex"].location != NSNotFound) {
-        needOpen = true;
-          } else if ([objectPath rangeOfString:@".app"].location != NSNotFound &&
-            [objectPath rangeOfString:@".framework"].location == NSNotFound) {
-        needOpen = true;
-      }
-
-      if (needOpen) {
-        system_call_exec([[NSString stringWithFormat:@"fopenn '%@'", escape_arg(objectFullPath)] UTF8String]);
-      }
-    }
-
-    fclose(fp);
-  }
-  // system_call_exec([[NSString stringWithFormat:@"fopenn '%@'", escape_arg(targetId)] UTF8String]);
-
-  // close the app with kill command
-  // get uuid in targetPath /private/var/containers/Bundle/Application/D271123F-AAEF-4CC7-A9E6-382DD35C2343
-  // NSString *appUuid = [targetPath lastPathComponent];
-  // NSString *killCmd = [NSString stringWithFormat:@"set -e; shopt -s dotglob; ps aux | grep -i 'Application/%@' | tr -s ' ' | cut -d ' ' -f 2 | xargs kill -9 &> /dev/null; shopt -u dotglob;", escape_arg(appUuid)];
-  // system_call_exec([killCmd UTF8String]);
-
   /* decrypt */
-  fprintf(stderr, "[dump] Start dumping...\n");
-
   /* LSApplicationProxy: get app info */
   LSApplicationProxy *appProxy = [LSApplicationProxy applicationProxyForIdentifier:targetId];
   assert(appProxy);
 
   NSFileManager *fileManager = [NSFileManager defaultManager];
+
+  fprintf(stderr, "[dump] Prepair dump for %s\n", [targetId UTF8String]);
+  NSEnumerator *enumerator = [fileManager enumeratorAtPath:targetPath];
+  NSString *objectPath = nil;
+  while (objectPath = [enumerator nextObject]) {
+    if ([objectPath hasSuffix:@".app"]) {
+      NSString *bundleExecutable = [[objectPath componentsSeparatedByString:@"/"].lastObject componentsSeparatedByString:@".app"].firstObject;
+      NSString *bundleExec = [NSString stringWithFormat:@"%@/%@", objectPath, bundleExecutable];
+      NSString *bundleExecPath = [targetPath stringByAppendingPathComponent:bundleExec];
+
+      system_call_exec([[NSString stringWithFormat:@"fopeen '%@'", escape_arg(bundleExecPath)] UTF8String]);
+      continue;
+    }
+
+    if ([objectPath hasSuffix:@".appex"]) {
+      NSString *executableName = [[objectPath componentsSeparatedByString:@"/"].lastObject componentsSeparatedByString:@".appex"].firstObject;
+      NSString *executable = [NSString stringWithFormat:@"%@/%@", objectPath, executableName];
+      NSString *executablePath = [targetPath stringByAppendingPathComponent:executable];
+      system_call_exec([[NSString stringWithFormat:@"fopeen '%@'", escape_arg(executablePath)] UTF8String]);
+      continue;
+    }
+  }
+
+  fprintf(stderr, "[dump] Start dumping...\n");
   NSString *homeDir = [fileManager currentDirectoryPath];
   NSString *workingDir = [NSString stringWithFormat:@"appdecrypt/%@_%@", [appProxy applicationIdentifier], [appProxy shortVersionString]];
 
