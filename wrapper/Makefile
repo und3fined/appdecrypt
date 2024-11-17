@@ -14,7 +14,7 @@ foulwrapper2_FRAMEWORKS = Foundation MobileCoreServices
 foulwrapper2_PRIVATE_FRAMEWORKS = MobileContainerManager
 
 fopenn_FILES = fopenn.c
-fopenn_CFLAGS = -L. -lfrida-core -lbsm -ldl -lm -lresolv -fobjc-arc -Wno-unused-variable
+fopenn_CFLAGS = -v -L. -lfrida-core -lbsm -ldl -lm -lresolv -fobjc-arc -Wno-unused-variable -Iinclude
 fopenn_CCFLAGS = $(fopenn_CFLAGS)
 fopenn_CODESIGN_FLAGS = -Sentitlements.plist
 fopenn_CCFLAGS += -std=c++2a
