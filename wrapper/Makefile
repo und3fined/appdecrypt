@@ -4,7 +4,7 @@ export ADDITIONAL_CFLAGS = -DTHEOS_LEAN_AND_MEAN -fobjc-arc
 
 include $(THEOS)/makefiles/common.mk
 
-TOOL_NAME = foulwrapper2
+TOOL_NAME = foulwrapper2 fopenn
 
 foulwrapper2_FILES = foulwrapper.m
 foulwrapper2_CFLAGS = -fobjc-arc -Wno-unused-variable -Iinclude
@@ -12,6 +12,14 @@ foulwrapper2_CCFLAGS = $(foulwrapper2_CFLAGS)
 foulwrapper2_CODESIGN_FLAGS = -Sentitlements.plist
 foulwrapper2_FRAMEWORKS = Foundation MobileCoreServices
 foulwrapper2_PRIVATE_FRAMEWORKS = MobileContainerManager
+
+fopenn_FILES = fopenn.c
+fopenn_CFLAGS = -lfrida-core -lbsm -ldl -lm -lresolv -fobjc-arc -Wno-unused-variable
+fopenn_CCFLAGS = $(fopenn_CFLAGS)
+fopenn_CODESIGN_FLAGS = -Sentitlements.plist
+fopenn_LDFLAGS += -Lkerninfra/libs
+fopenn_CCFLAGS += -std=c++2a
+fopenn_FRAMEWORKS = Foundation CoreGraphics UIKit
 
 include $(THEOS_MAKE_PATH)/tool.mk
 
