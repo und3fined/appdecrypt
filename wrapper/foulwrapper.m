@@ -171,13 +171,13 @@ int main(int argc, char *argv[]) {
 
 
   /* Try open */
-  fprintf(stderr, "[dump] Prepair dump for %s\n  %s\n", [targetId UTF8String], [targetPath UTF8String]);
+  fprintf(stderr, "[dump] Prepair dump for %s\n", [targetId UTF8String]);
 
   NSEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:targetPath];
   NSString *objectPath = nil;
   while (objectPath = [enumerator nextObject]) {
-    NSString *fullPath = [targetPath stringByAppendingPathComponent:objectPath];
-    FILE *fp = fopen([fullPath UTF8String], "rb");
+    NSString *objectFullPath = [targetPath stringByAppendingPathComponent:objectPath];
+    FILE *fp = fopen(objectFullPath.UTF8String, "rb");
     if (fp) {
       perror("fopen");
       continue;
@@ -209,8 +209,7 @@ int main(int argc, char *argv[]) {
       }
 
       if (needOpen) {
-        fprintf(stderr, "Try open %s\n", [fullPath UTF8String]);
-        system_call_exec([[NSString stringWithFormat:@"fopenn %@", escape_arg(fullPath)] UTF8String]);
+        system_call_exec([[NSString stringWithFormat:@"fopenn '%@'", escape_arg(objectFullPath)] UTF8String]);
       }
     }
 
