@@ -184,7 +184,6 @@ int main(int argc, char *argv[]) {
       NSString *bundleExecutable = [[objectPath componentsSeparatedByString:@"/"].lastObject componentsSeparatedByString:@".app"].firstObject;
       NSString *bundleExec = [NSString stringWithFormat:@"%@/%@", objectPath, bundleExecutable];
       NSString *bundleExecPath = [targetPath stringByAppendingPathComponent:bundleExec];
-
       system_call_exec([[NSString stringWithFormat:@"fopenn '%@'", escape_arg(bundleExecPath)] UTF8String]);
       continue;
     }
@@ -194,6 +193,14 @@ int main(int argc, char *argv[]) {
       NSString *executable = [NSString stringWithFormat:@"%@/%@", objectPath, executableName];
       NSString *executablePath = [targetPath stringByAppendingPathComponent:executable];
       system_call_exec([[NSString stringWithFormat:@"fopenn '%@'", escape_arg(executablePath)] UTF8String]);
+      continue;
+    }
+
+    if ([objectPath hasSuffix:@".framework"]) {
+      NSString *frameworkName = [[objectPath componentsSeparatedByString:@"/"].lastObject componentsSeparatedByString:@".framework"].firstObject;
+      NSString *framework = [NSString stringWithFormat:@"%@/%@", objectPath, frameworkName];
+      NSString *frameworkPath = [targetPath stringByAppendingPathComponent:framework];
+      system_call_exec([[NSString stringWithFormat:@"fopenn '%@'", escape_arg(frameworkPath)] UTF8String]);
       continue;
     }
   }

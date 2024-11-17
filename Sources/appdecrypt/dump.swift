@@ -164,7 +164,7 @@ class Dump {
       let targetPath = dumpedFilePaths[i]
       // dlopen is used to load the dylib into the current process
       // Please see https://github.com/NyaMisty/fouldecrypt/issues/15#issuecomment-1722561492
-      let handle = dlopen(sourcePath, RTLD_LAZY | RTLD_GLOBAL)
+      //let handle = dlopen(sourcePath, RTLD_LAZY | RTLD_GLOBAL)
       Dump.mapFile(path: sourcePath, mutable: false) {
         base_size, base_descriptor, base_error, base_raw in
         if let base = base_raw {
@@ -226,7 +226,7 @@ class Dump {
           consoleIO.writeMessage("Read \(sourcePath) Fail with \(base_error)", to: .error)
         }
       }
-      dlclose(handle)
+      //dlclose(handle)
     }
   }
 
