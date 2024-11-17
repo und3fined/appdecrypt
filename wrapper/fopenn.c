@@ -10,8 +10,12 @@
 
 #include "frida-core.h"
 
+#include <glib.h>
+#include <glib-object.h>
+#include <gio/gio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 static void on_signal(int signo);
 static gboolean stop(gpointer user_data);
@@ -30,7 +34,7 @@ int main(int argc, char *argv[]) {
   frida_init();
 
   if (argc != 2 || (target_pid = atoi (argv[1])) == 0) {
-    g_printerr("Usage: %s <bundle_id> [-R]\n\nOptions:\n-R: Enable remote mode. Port default 1337.", argv[0]);
+    fprintf(stderr, "Usage: %s <bundle_id> [-R]\n\nOptions:\n-R: Enable remote mode. Port default 1337.\n", argv[0]);
     return 1;
   }
 
@@ -41,15 +45,14 @@ int main(int argc, char *argv[]) {
 
   manager = frida_device_manager_new();
 
-  devices = frida_device_manager_enumerate_devices_sync(manager, NULL, &error);
-  g_assert(error == NULL);
+  devices = frida_device_manager_enumerate_devices_sync(manager, NULL, NULL);
 
   local_device = NULL;
   num_devices = frida_device_list_size(devices);
   for (i = 0; i != num_devices; i++) {
     FridaDevice *device = frida_device_list_get(devices, i);
 
-    g_print("[*] Found device: \"%s\"\n", frida_device_get_name(device));
+    fprintf(stderr, "[*] Found device: \"%s\"\n", frida_device_get_name(device));
 
     if (frida_device_get_dtype(device) == FRIDA_DEVICE_TYPE_LOCAL)
       local_device = g_object_ref(device);
