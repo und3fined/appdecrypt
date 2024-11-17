@@ -13,10 +13,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-static void on_detached(FridaSession *session, FridaSessionDetachReason reason,
-                        FridaCrash *crash, gpointer user_data);
-static void on_message(FridaScript *script, const gchar *message, GBytes *data,
-                       gpointer user_data);
 static void on_signal(int signo);
 static gboolean stop(gpointer user_data);
 
