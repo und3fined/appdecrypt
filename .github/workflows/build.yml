@@ -17,6 +17,15 @@ jobs:
     - name: Prepare Theos
       uses: und3fined/theos-action@main
 
+    - name: Setup deps
+      run: |
+        curl -L https://github.com/frida/frida/releases/download/16.5.7/frida-core-devkit-16.5.6-ios-arm64.tar.xz -o frida-core-devkit-16.5.6-ios-arm64.tar.xz
+        tar -xf frida-core-devkit-16.5.7-ios-arm64.tar.xz
+
+        cp -f frida-core.h theos/include/
+        cp -f libfrida-core.a theos/lib/iphone/rootless/
+        cp -f libfrida-core.a ./wrapper/
+
     - name: Build appdecrypt2
       run: |
         chmod +x build-iOS.sh
