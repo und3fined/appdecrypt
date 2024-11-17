@@ -8,3 +8,5 @@
 /appdecrypt
 d3crypt
 openf/target
+wrapper/frida-core.h
+libfrida-core.a
