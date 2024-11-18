@@ -340,7 +340,5 @@ int main(int argc, char *argv[]) {
   [fileManager removeItemAtPath:workingDir error:nil];
 
   fprintf(stderr, "[dump] Done!\n");
-  fprintf(stdout, "%s\n", [archiveName UTF8String]);
-  fflush(stdout);
   exit(0);
 }
