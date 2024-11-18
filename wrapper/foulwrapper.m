@@ -231,7 +231,7 @@ int main(int argc, char *argv[]) {
   fprintf(stderr, "[dump] Dumping to .%s\n", [normalize_path(outPath) UTF8String]);
 
   NSString *decryptPath = [NSString stringWithFormat:@".%@", normalize_path(outPath)];
-  system_call_exec([[NSString stringWithFormat:@"d3crypt '%@' '%@' -b", escape_arg(targetPath), escape_arg(decryptPath)] UTF8String]);
+  system_call_exec([[NSString stringWithFormat:@"d3crypt '%@' '%@' -b -e '%@'", escape_arg(targetPath), escape_arg(decryptPath), escape_arg([appProxy bundleExecutable])] UTF8String]);
 
   // check .fail in outPath
   NSString *failPath = [NSString stringWithFormat:@"%@/.fail", outPath];

@@ -40,6 +40,15 @@ class Dump {
     var ignoreCopy = false
     ignoreCopy = CommandLine.arguments.contains("-b") || CommandLine.arguments.contains("--binary")
 
+    var executableName = ""
+    if CommandLine.arguments.contains("--executable") || CommandLine.arguments.contains("-e") {
+      if let index = CommandLine.arguments.firstIndex(of: "--executable") {
+        executableName = CommandLine.arguments[index + 1]
+      } else if let index = CommandLine.arguments.firstIndex(of: "-e") {
+        executableName = CommandLine.arguments[index + 1]
+      }
+    }
+
     #if os(iOS)
       if !targetUrl.hasSuffix("/Payload") && ignoreCopy == false {
         targetUrl += "/Payload"
@@ -75,8 +84,12 @@ class Dump {
     if let arr = enumeratorAtPath?.allObjects as? [String] {
       for item in arr {
         if item.hasSuffix(".app") {
-          let machOName =
-            item.components(separatedBy: "/").last?.components(separatedBy: ".app").first ?? ""
+          var machOName = executableName
+          if machOName == "" {
+            machOName =
+              item.components(separatedBy: "/").last?.components(separatedBy: ".app").first ?? ""
+          }
+
           if machOName == "" {
             consoleIO.writeMessage("Can't find machO name.", to: .error)
             return
