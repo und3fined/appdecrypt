@@ -119,6 +119,7 @@ NSString *normalize_path(NSString *p) {
 
 @interface LSApplicationProxy ()
 - (NSString *)shortVersionString;
+- (NSString *)bundleExecutable;
 @end
 
 int main(int argc, char *argv[]) {
@@ -181,8 +182,7 @@ int main(int argc, char *argv[]) {
   NSString *objectPath = nil;
   while (objectPath = [enumerator nextObject]) {
     if ([objectPath hasSuffix:@".app"]) {
-      NSString *bundleExecutable = [[objectPath componentsSeparatedByString:@"/"].lastObject componentsSeparatedByString:@".app"].firstObject;
-      NSString *bundleExec = [NSString stringWithFormat:@"%@/%@", objectPath, bundleExecutable];
+      NSString *bundleExec = [NSString stringWithFormat:@"%@/%@", objectPath, [appProxy bundleExecutable]];
       NSString *bundleExecPath = [targetPath stringByAppendingPathComponent:bundleExec];
       system_call_exec([[NSString stringWithFormat:@"fopenn '%@'", escape_arg(bundleExecPath)] UTF8String]);
       continue;
