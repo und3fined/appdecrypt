@@ -122,6 +122,14 @@ NSString *normalize_path(NSString *p) {
 - (NSString *)bundleExecutable;
 @end
 
+void clean_pid(NSString *targetPath) {
+  // close the app with kill command
+  // get uuid in targetPath /private/var/containers/Bundle/Application/D271123F-AAEF-4CC7-A9E6-382DD35C2343
+  NSString *appUuid = [targetPath lastPathComponent];
+  NSString *killCmd = [NSString stringWithFormat:@"set -e; shopt -s dotglob; ps aux | grep -i 'Application/%@' | tr -s ' ' | cut -d ' ' -f 2 | xargs kill -9 &> /dev/null; shopt -u dotglob;", escape_arg(appUuid)];
+  system_call_exec([killCmd UTF8String]);
+}
+
 int main(int argc, char *argv[]) {
   if (argc < 2) {
     fprintf(stderr, "usage: foulwrapper2 (application name or application "
@@ -218,12 +226,14 @@ int main(int argc, char *argv[]) {
     fprintf(stderr, "[dump] Dump directory already exists. AUTO CLEANUP!\n");
     if ([fileManager removeItemAtPath:outPath error:&error]) {} else {
       fprintf(stderr, "[dump] Failed to remove directory: %s\n", [normalize_path(outPath) UTF8String]);
+      clean_pid(targetPath);
       exit(1);
     }
   }
 
   if ([fileManager createDirectoryAtPath:outPath withIntermediateDirectories:YES attributes:nil error:&error]) {} else {
     fprintf(stderr, "[dump] Failed to create directory: %s\n", [normalize_path(outPath) UTF8String]);
+    clean_pid(targetPath);
     exit(1);
   }
 
@@ -244,6 +254,7 @@ int main(int argc, char *argv[]) {
 
     fprintf(stderr, "[clean] Remove temp %s\n", [workingDir UTF8String]);
     [fileManager removeItemAtPath:workingDir error:nil];
+    clean_pid(targetPath);
     exit(1);
   }
 
@@ -258,6 +269,7 @@ int main(int argc, char *argv[]) {
     fprintf(stderr, "[archive] Payload directory already exists. AUTO CLEANUP!\n");
     if ([fileManager removeItemAtPath:payloadPath error:&error]) {} else {
       fprintf(stderr, "[archive] Failed to remove directory: %s\n", [normalize_path(payloadPath) UTF8String]);
+      clean_pid(targetPath);
       exit(1);
     }
   }
@@ -266,6 +278,7 @@ int main(int argc, char *argv[]) {
   BOOL didCopy = [fileManager copyItemAtPath:targetPath toPath:payloadPath error:&error];
   if (!didCopy) {
     fprintf(stderr, "[archive] Failed to copy Payload: %s\n", [normalize_path(payloadPath) UTF8String]);
+    clean_pid(targetPath);
     exit(1);
   }
 
@@ -333,12 +346,14 @@ int main(int argc, char *argv[]) {
 
   if (zipStatus != 0) {
     fprintf(stderr, "[archive] Failed to archive ipa!\n");
+    clean_pid(targetPath);
     exit(1);
   }
 
   fprintf(stderr, "[dump] Remove temp %s\n", [workingDir UTF8String]);
   [fileManager removeItemAtPath:workingDir error:nil];
 
+  clean_pid(targetPath);
   fprintf(stderr, "[dump] Done!\n");
   exit(0);
 }
